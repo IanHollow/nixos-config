@@ -1,0 +1,4 @@
+[
+  ./pipewire.nix
+  ./nvidia.nix
+]
