@@ -75,6 +75,7 @@
     driSupport32Bit = true;
     extraPackages = with pkgs; [
       nvidia-vaapi-driver
+      vaapiVdpau
     ];
   };
 
@@ -187,6 +188,8 @@
         gwenview # Image Viewer
         # Other Programs
         vscode
+        anki-bin
+        ranger
       ]
       ++ (with unstable; [
         # Apps
@@ -194,6 +197,7 @@
         firefox # Browser
         sddm
         discord
+        yuzu-early-access
       ]);
   };
 
@@ -202,13 +206,7 @@
   # needed for store VS Code auth token
   programs.seahorse.enable = true;
   services.gnome.gnome-keyring.enable = true;
-  nixpkgs.overlays = [
-    (final: prev: {
-      vscode = prev.vscode.override {
-        commandLineArgs = "--password-store='gnome'";
-      };
-    })
-  ];
+  nixpkgs.config.vscode.commandLineArgs = "--password-store='gnome'";
 
   # Fonts
   fonts = {

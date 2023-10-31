@@ -10,7 +10,7 @@
 }: let
   pkgs = import nixpkgs {
     inherit system;
-    config.allowUnfree = true; # Allow Proprietary Software
+    config.allowUnfree = true;
   };
 
   unstable = import nixpkgs-unstable {
@@ -18,13 +18,13 @@
     config.allowUnfree = true;
   };
 in {
-  nixosDesktop = nixpkgs.lib.nixosSystem {
+  Desktop = nixpkgs.lib.nixosSystem {
     # Desktop Profile
     inherit system;
     specialArgs = {
       inherit inputs system unstable vars;
       host = {
-        hostName = "nixosDesktop";
+        hostName = "nixos_desktop";
       };
     };
     modules = [
