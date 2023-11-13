@@ -1,3 +1,4 @@
 [
   ./spicetify.nix
+  ./kitty.nix
 ]
