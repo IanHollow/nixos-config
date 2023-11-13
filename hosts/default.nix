@@ -5,29 +5,34 @@
   nixpkgs-unstable,
   home-manager,
   vars,
-  system,
   ...
 }: let
+  system = "x86_64-linux"; # System Architecture
+
   pkgs = import nixpkgs {
     inherit system;
-    config.allowUnfree = true;
+    config.allowUnfree = true; # Allow Proprietary Software
   };
 
   unstable = import nixpkgs-unstable {
     inherit system;
     config.allowUnfree = true;
   };
+
+  lib = nixpkgs.lib;
 in {
-  Desktop = nixpkgs.lib.nixosSystem {
+  desktop = lib.nixosSystem {
     # Desktop Profile
     inherit system;
     specialArgs = {
+      # Pass Flake Variable
       inherit inputs system unstable vars;
       host = {
-        hostName = "nixos_desktop";
+        hostName = "desktop";
       };
     };
     modules = [
+      # Modules Used
       ./desktop
       ./configuration.nix
 

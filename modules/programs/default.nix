@@ -1,4 +1,3 @@
 [
-  ./spicetify-nix.nix
-  ./vscode.nix
+  ./spicetify.nix
 ]

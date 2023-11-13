@@ -1,6 +1,8 @@
-{ pkgs, vars, ... }:
-
 {
+  pkgs,
+  vars,
+  ...
+}: {
   users.users.${vars.user} = {
     shell = pkgs.zsh;
   };
@@ -16,7 +18,7 @@
       ohMyZsh = {
         # Plug-ins
         enable = true;
-        plugins = [ "git" ];
+        plugins = ["git"];
       };
 
       shellInit = ''

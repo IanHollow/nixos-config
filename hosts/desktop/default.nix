@@ -1,27 +1,65 @@
-{ lib, pkgs, vars, ... }:
-
 {
-  imports = [ ./hardware-configuration.nix ] ++
-    (import ../../modules/desktops) ++
-    (import ../../modules/programs) ++
-    (import ../../modules/shell);
+  pkgs,
+  unstable,
+  lib,
+  ...
+}: {
+  imports =
+    [./hardware-configuration.nix]
+    ++ (import ../../modules/hardware)
+    ++ (import ../../modules/desktops)
+    ++ (import ../../modules/editors)
+    ++ (import ../../modules/programs)
+    ++ (import ../../modules/security)
+    ++ (import ../../modules/services)
+    ++ (import ../../modules/shell)
+    ++ (import ../../modules/theming);
 
-  # Boot Loader Setup
-  boot.loader = {
-    timeout = 5;
-    grub = {
-      enable = true;
-      device = "nodev";
-      efiSupport = true;
-      useOSProber = true;
-      configurationLimit = 10;
+  # Desktop Evironment / Desktop Manager
+  hyprland.enable = true;
+
+  # Enable the GPU
+  nvidia_gpu.enable = true;
+
+  # Enable Audio
+  pipewire.enable = true;
+
+  # Enable bootloader
+  boot = {
+    # Boot Options
+    loader = {
+      efi = {
+        canTouchEfiVariables = true;
+        efiSysMountPoint = "/boot";
+      };
+      grub = {
+        # Grub Dual Boot
+        enable = true;
+        devices = ["nodev"];
+        efiSupport = true;
+        useOSProber = true; # Find All boot Options
+        configurationLimit = 10;
+        default = 1; # choose nixos for boot (set 2 to boot to another OS if installed)
+      };
+      timeout = 5;
     };
-    efi = {
-      canTouchEfiVariables = true;
-      efiSysMountPoint = "/boot";
-    };
+    kernelPackages = pkgs.linuxPackages_6_5;
   };
 
-  # Kernel
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  # System-Wide Packages
+  environment.systemPackages = with pkgs;
+    [
+      # Media/Video
+      okular # PDF Viewer
+      gwenview # Image Viewer
+      mpv # Video Player
+      anki-bin
+    ]
+    ++ (with unstable; [
+      # Apps
+      firefox # Browser
+      discord # Messaging
+      bitwarden # Password Manager
+      yuzu-early-access
+    ]);
 }

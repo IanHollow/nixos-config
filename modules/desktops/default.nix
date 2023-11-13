@@ -1,3 +1,4 @@
 [
+  ./options.nix
   ./hyprland.nix
 ]

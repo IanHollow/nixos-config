@@ -1,29 +1,67 @@
-{pkgs, unstable, ...}:{
-  # Enable OpenGL
-  hardware.opengl = {
-    enable = true;
-    driSupport = true;
-    driSupport32Bit = true;
-    extraPackages = with pkgs; [
-      nvidia-vaapi-driver
-      vaapiVdpau
-    ];
-  };
-  
-  # Enable nvidia drivers
-  services.xserver.videoDrivers = ["nvidia"];
-  hardware.nvidia = {
-    modesetting.enable = true;
-    powerManagement.enable = false;
-    powerManagement.finegrained = false;
-    open = true;
-    nvidiaSettings = true;
-    package = config.boot.kernelPackages.nvidiaPackages.production;
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
+with lib; let
+  nverProduction = config.boot.kernelPackages.nvidiaPackages.stable.version;
+  nverBeta = config.boot.kernelPackages.nvidiaPackages.beta.version;
+  nvidiaPackage =
+    if (lib.versionOlder nverBeta nverProduction)
+    then config.boot.kernelPackages.nvidiaPackages.production
+    else config.boot.kernelPackages.nvidiaPackages.beta;
+in {
+  options = {
+    nvidia_gpu = {
+      # Condition if host uses an Nvidia GPU
+      enable = mkOption {
+        type = types.bool;
+        default = false;
+      };
+    };
   };
 
-  # Kernel Modules / Kernel Parameters
-  boot = {
-    initrd.kernelModules = ["nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm"];
-    kernelParams = ["nvidia_drm.modeset=1"];
+  config = mkIf (config.nvidia_gpu.enable) {
+    # Enable OpenGL
+    hardware.opengl = {
+      enable = true;
+      driSupport = true;
+      driSupport32Bit = true;
+      extraPackages = with pkgs; [
+        nvidia-vaapi-driver
+        vaapiVdpau
+      ];
+    };
+
+    # Load nvidia driver for Xorg and Wayland
+    services.xserver.videoDrivers = ["nvidia"];
+
+    hardware.nvidia = {
+      # Modesetting is required.
+      modesetting.enable = true;
+
+      # Nvidia power management. Experimental, and can cause sleep/suspend to fail.
+      powerManagement.enable = config.laptop.enable;
+      # Fine-grained power management. Turns off GPU when not in use.
+      # Experimental and only works on modern Nvidia GPUs (Turing or newer).
+      powerManagement.finegrained = config.laptop.enable;
+
+      # Use the NVidia open source kernel module (not to be confused with the
+      # independent third-party "nouveau" open source driver).
+      # Support is limited to the Turing and later architectures. Full list of
+      # supported GPUs is at:
+      # https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus
+      # Only available from driver 515.43.04+
+      # Do not disable this unless your GPU is unsupported or if you have a good reason to.
+      open = true;
+
+      # The Nvidia settings menu,
+      # accessible via `nvidia-settings`.
+      nvidiaSettings = false;
+
+      # Uses beta version if it is newer than the production version
+      package = nvidiaPackage;
+    };
   };
 }

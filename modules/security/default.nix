@@ -1,3 +1,3 @@
 [
-  ./polkit.nix
+  ./tpm.nix
 ]
