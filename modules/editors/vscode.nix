@@ -11,7 +11,6 @@
       enableUpdateCheck = false;
       mutableExtensionsDir = false;
       enableExtensionUpdateCheck = false;
-
       userSettings = {
         "git.openRepositoryInParentFolders" = "always";
         "files.autoSave" = "onFocusChange";
@@ -22,8 +21,12 @@
         "files.exclude" = {"**/node_modules/**" = true;};
         "editor.formatOnSave" = true;
         "workbench.colorTheme" = "Gruvbox Dark Hard";
+        "workbench.iconTheme" = "material-icon-theme";
         "window.titleBarStyle" = "custom";
         "window.zoomLevel" = 1;
+        "C_Cpp.default.intelliSenseMode" = "linux-gcc-x64";
+        "C_Cpp.default.cStandard" = "c99";
+        "C_Cpp.codeAnalysis.clangTidy.enabled" = true;
       };
 
       package = pkgs.vscode;

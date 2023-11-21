@@ -46,6 +46,15 @@ with host; {
         __GLX_VENDOR_LIBRARY_NAME = "nvidia";
         WLR_NO_HARDWARE_CURSORS = "1";
 
+        # XDG Specifications
+        XDG_CURRENT_DESKTOP = "Hyprland";
+        XDG_SESSION_DESKTOP = "Hyprland";
+
+        # Qt Variables
+        QT_AUTO_SCREEN_SCALE_FACTOR = "1";
+        QT_QPA_PLATFORM = "wayland;xcb";
+        QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
+
         # Firefox
         MOZ_ENABLE_WAYLAND = "1";
         MOZ_WEBRENDER = "1";
@@ -62,6 +71,8 @@ with host; {
         swaylock # Lock Screen
         wl-clipboard # Clipboard
         wlr-randr # Monitor Settings
+        xdg-utils # XDG Utilities
+        mako # Notifications
       ];
     };
 
@@ -76,6 +87,7 @@ with host; {
       settings = {
         default_session = {
           command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --time-format '%I:%M %p | %a • %h | %F' --cmd Hyprland";
+          user = vars.user;
         };
       };
       vt = 7;
@@ -98,10 +110,10 @@ with host; {
     };
 
     systemd.sleep.extraConfig = ''
-      AllowSuspend=yes
+      AllowSuspend=no
       AllowHibernation=no
       AllowSuspendThenHibernate=no
-      AllowHybridSleep=yes
+      AllowHybridSleep=no
     ''; # Clamshell Mode
 
     nix.settings = {

@@ -39,7 +39,7 @@
         efiSupport = true;
         useOSProber = true; # Find All boot Options
         configurationLimit = 10;
-        default = 1; # choose nixos for boot (set 2 to boot to another OS if installed)
+        default = 0; # chooses nixos for boot (set 2 to boot to another OS if installed)
       };
       timeout = 5;
     };
@@ -58,8 +58,6 @@
     ++ (with unstable; [
       # Apps
       firefox # Browser
-      discord # Messaging
       bitwarden # Password Manager
-      yuzu-early-access
     ]);
 }
