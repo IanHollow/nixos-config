@@ -28,6 +28,7 @@
         "C_Cpp.default.cStandard" = "c99";
         "C_Cpp.codeAnalysis.clangTidy.enabled" = true;
         "editor.inlineSuggest.enabled" = true;
+        "git.autofetch" = true;
       };
       extensions = with pkgs.vscode-extensions; [
         # C and CPP
