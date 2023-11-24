@@ -19,7 +19,7 @@ in {
   # configure spicetify :)
   programs.spicetify = {
     theme = spicePkgs.themes.Ziro;
-    colorScheme = "gray-dark";
+    colorScheme = "green-dark";
 
     # use spotify from the nixpkgs master branch
     spotifyPackage = unstable.spotify;
