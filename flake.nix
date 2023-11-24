@@ -11,8 +11,6 @@
     hyprland.url = "github:hyprwm/Hyprland";
 
     spicetify-nix.url = "github:the-argus/spicetify-nix";
-
-    nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
   };
 
   outputs = inputs @ {

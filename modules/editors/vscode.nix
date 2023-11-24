@@ -15,6 +15,7 @@
         "git.openRepositoryInParentFolders" = "always";
         "files.autoSave" = "onFocusChange";
         "editor.tabSize" = 4;
+        "[nix]"."editor.tabSize" = 2;
         "editor.fontLigatures" = true;
         "editor.fontFamily" = "CaskaydiaCove NF";
         "terminal.integrated.fontFamily" = "CaskaydiaCove NF";
@@ -23,15 +24,41 @@
         "workbench.colorTheme" = "Gruvbox Dark Hard";
         "workbench.iconTheme" = "material-icon-theme";
         "window.titleBarStyle" = "custom";
-        "window.zoomLevel" = 1;
         "C_Cpp.default.intelliSenseMode" = "linux-gcc-x64";
         "C_Cpp.default.cStandard" = "c99";
         "C_Cpp.codeAnalysis.clangTidy.enabled" = true;
+        "editor.inlineSuggest.enabled" = true;
       };
+      extensions = with pkgs.vscode-extensions; [
+        # C and CPP
+        ms-vscode.cpptools
+
+        # Nix
+        jnoortheen.nix-ide
+        kamadorueda.alejandra
+
+        # Theming
+        jdinhlife.gruvbox
+        pkief.material-icon-theme
+
+        # Extra
+        github.copilot
+      ];
 
       package = pkgs.vscode;
     };
   };
+
+  # Extra Packages that vscode extensions will fail without
+  environment.systemPackages = with pkgs; [
+    # kamadorueda.alejandra
+    alejandra
+
+    # ms-vscode.cpptools
+    gnumake
+    valgrind
+    gdb
+  ];
 
   # needed for store VS Code auth token
   programs.seahorse.enable = true;
