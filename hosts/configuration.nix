@@ -15,13 +15,6 @@
   };
 
   time.timeZone = "America/Los_Angeles"; # Time zone and Internationalisation
-  i18n = {
-    defaultLocale = "en_US.UTF-8";
-  };
-
-  console = {
-    keyMap = "us";
-  };
 
   environment = {
     systemPackages = with pkgs;

@@ -9,6 +9,7 @@
     ++ (import ../../modules/hardware)
     ++ (import ../../modules/desktops)
     ++ (import ../../modules/editors)
+    ++ (import ../../modules/input-components)
     ++ (import ../../modules/programs)
     ++ (import ../../modules/security)
     ++ (import ../../modules/services)
