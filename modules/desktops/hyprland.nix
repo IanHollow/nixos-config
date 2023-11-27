@@ -24,64 +24,83 @@ with host; {
     };
   };
 
-  imports = [inputs.hyprland.nixosModules.default];
-
   config = mkIf (config.hyprland.enable) {
-    wlwm.enable = true; # Wayland Window Manager
+    wlwm.enable = true; # Define that the Wayland Window Manager is used
 
-    environment = let
+    # Start Hyprland from TTY1
+    environment.loginShellInit = let
+      # Command to start Hyprland
       exec = "exec dbus-launch Hyprland";
-    in {
-      loginShellInit = ''
-        if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
-          ${exec}
-        fi
-      ''; # Start from TTY1
+    in ''
+      if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
+        ${exec}
+      fi
+    '';
 
-      sessionVariables = {
-        # Nvidia
-        LIBVA_DRIVER_NAME = "nvidia";
-        XDG_SESSION_TYPE = "wayland";
-        GBM_BACKEND = "nvidia-drm";
-        __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-        WLR_NO_HARDWARE_CURSORS = "1";
+    # set environment variables for the session
+    environment.sessionVariables = let
+      extraNvidiaSessionVariables =
+        # TODO: change this if statement when I make better options
+        # Check if NVIDIA is the only GPU or Main (kind of not full proof yet)
+        if (config.nvidia_gpu.enable && !config.intel_gpu.integrated.enable)
+        then {
+          LIBVA_DRIVER_NAME = "nvidia";
+          GBM_BACKEND = "nvidia-drm";
+          __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+          WLR_NO_HARDWARE_CURSORS = "1";
+        }
+        else {};
+    in
+      # Merge the base variables with the extra variables
+      mkMerge [
+        # Base Variables
+        {
+          # XDG Specifications
+          XDG_SESSION_TYPE = "wayland"; # Also needed for NVIDIA GPUs
+          XDG_CURRENT_DESKTOP = "Hyprland";
+          XDG_SESSION_DESKTOP = "Hyprland";
 
-        # XDG Specifications
-        XDG_CURRENT_DESKTOP = "Hyprland";
-        XDG_SESSION_DESKTOP = "Hyprland";
+          # Qt Variables
+          QT_AUTO_SCREEN_SCALE_FACTOR = "1";
+          QT_QPA_PLATFORM = "wayland;xcb";
+          QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
 
-        # Qt Variables
-        QT_AUTO_SCREEN_SCALE_FACTOR = "1";
-        QT_QPA_PLATFORM = "wayland;xcb";
-        QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
+          # Firefox
+          MOZ_ENABLE_WAYLAND = "1";
+          MOZ_WEBRENDER = "1";
 
-        # Firefox
-        MOZ_ENABLE_WAYLAND = "1";
-        MOZ_WEBRENDER = "1";
+          # ozone-based browsers & electron apps
+          NIXOS_OZONE_WL = "1";
+        }
 
-        # ozone-based browsers & electron apps
-        NIXOS_OZONE_WL = "1";
-      };
-
-      systemPackages = with pkgs; [
-        grim # Grab Images
-        slurp # Region Selector
-        swappy # Snapshot Editor
-        swayidle # Idle Daemon
-        swaylock # Lock Screen
-        wl-clipboard # Clipboard
-        wlr-randr # Monitor Settings
-        xdg-utils # XDG Utilities
-        mako # Notifications
+        # Extra Variables
+        extraNvidiaSessionVariables
       ];
-    };
 
+    # install required packages for the Hyprland configuration
+    environment.systemPackages = with pkgs; [
+      grim # Grab Images
+      slurp # Region Selector
+      swappy # Snapshot Editor
+      swayidle # Idle Daemon
+      swaylock # Lock Screen
+      wl-clipboard # Clipboard
+      wlr-randr # Monitor Settings
+      xdg-utils # XDG Utilities
+      mako # Notifications
+    ];
+
+    # TODO: configure hyprland by enabling/disabling
+    #       user made options for other packages or configurations
+
+    # setup swaylock
     security.pam.services.swaylock = {
       text = ''
         auth include login
       '';
     };
 
+    # Start greetd on TTY7
     services.greetd = {
       enable = true;
       settings = {
@@ -104,8 +123,7 @@ with host; {
         # Window Manager
         enable = true;
         package = inputs.hyprland.packages.${pkgs.system}.hyprland;
-        enableNvidiaPatches = true;
-        #nvidiaPatches = if hostName == "work" then true else false;
+        nvidiaPatches = config.nvidia_gpu.enable;
       };
     };
 
@@ -114,7 +132,7 @@ with host; {
       AllowHibernation=no
       AllowSuspendThenHibernate=no
       AllowHybridSleep=no
-    ''; # Clamshell Mode
+    ''; # Disable Sleep & Hibernation
 
     nix.settings = {
       substituters = ["https://hyprland.cachix.org"];
@@ -146,26 +164,6 @@ with host; {
         text-ver-color = "ffffff";
         text-wrong-color = "ffffff";
         show-failed-attempts = true;
-      };
-
-      home.file = {
-        ".config/hypr/script/clamshell.sh" = {
-          text = ''
-            #!/bin/sh
-
-            if grep open /proc/acpi/button/lid/LID/state; then
-              ${config.programs.hyprland.package}/bin/hyprctl keyword monitor "eDP-1, 1920x1080, 0x0, 1"
-            else
-              if [[ `hyprctl monitors | grep "Monitor" | wc -l` != 1 ]]; then
-                ${config.programs.hyprland.package}/bin/hyprctl keyword monitor "eDP-1, disable"
-              else
-                ${pkgs.swaylock}/bin/swaylock -f
-                ${pkgs.systemd}/bin/systemctl sleep
-              fi
-            fi
-          '';
-          executable = true;
-        };
       };
     };
   };
