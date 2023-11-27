@@ -22,6 +22,7 @@
       };
 
       theme = {
+        # TODO: change to new theme and test that it works
         # https://github.com/catppuccin/gtk
         name = "Catppuccin-Macchiato-Compact-Pink-dark";
         package = pkgs.catppuccin-gtk.override {

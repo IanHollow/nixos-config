@@ -13,7 +13,7 @@
       material-design-icons
       font-awesome
 
-      # noto fonts
+      # Noto Fonts
       noto-fonts
       noto-fonts-cjk
       noto-fonts-emoji
@@ -25,7 +25,10 @@
       source-han-sans
       source-han-serif
 
-      # nerdfonts
+      # Google Fonts
+      google-fonts
+
+      # Nerdfonts
       (nerdfonts.override {
         fonts = [
           "FiraCode"
