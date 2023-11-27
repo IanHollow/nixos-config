@@ -2,6 +2,8 @@
   lib,
   config,
   pkgs,
+  unstable,
+  inputs,
   ...
 }:
 with lib; let
@@ -40,9 +42,14 @@ in {
         enable = true;
         driSupport = true;
         driSupport32Bit = true;
+
+        # TODO: Check what packages are needed
+        # Add Extra Packages for Nvidia
         extraPackages = with pkgs; [
           nvidia-vaapi-driver
           vaapiVdpau
+          libva
+          libva-utils
         ];
       };
 

@@ -1,4 +1,4 @@
 [
-  ./nvidia.nix
+  ./gpu
   ./pipewire.nix
 ]
