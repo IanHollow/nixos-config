@@ -36,6 +36,7 @@
         canTouchEfiVariables = true;
         efiSysMountPoint = "/boot";
       };
+      # TODO: Theme Grub
       grub = {
         # Grub Dual Boot
         enable = true;
@@ -43,7 +44,7 @@
         efiSupport = true;
         useOSProber = true; # Find All boot Options
         configurationLimit = 10;
-        default = 0; # chooses nixos for boot (set 2 to boot to another OS if installed)
+        default = 0; # chooses nixos for boot (set 2 to boot to another OS (windows) if desired)
       };
       timeout = 5;
     };
