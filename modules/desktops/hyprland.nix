@@ -29,16 +29,6 @@ with lib; {
   config = mkIf (config.hyprland.enable) {
     wlwm.enable = true; # Define Wayland Window Manager as enabled
 
-    # Start Hyprland from TTY1
-    # TODO: check if this is needed still since greetd is used
-    environment.loginShellInit = let
-      exec = "exec dbus-launch Hyprland"; # Command to start Hyprland
-    in ''
-      if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
-        ${exec}
-      fi
-    '';
-
     # set environment variables for the session
     environment.sessionVariables = let
       extraNvidiaSessionVariables =
