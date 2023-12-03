@@ -28,6 +28,8 @@
   # Enable Audio
   pipewire.enable = true;
 
+  # TODO: Add Plymouth
+
   # Enable bootloader
   boot = {
     # Boot Options
