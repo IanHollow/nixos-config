@@ -16,9 +16,8 @@
   boot.kernelModules = ["kvm-intel"];
   boot.extraModulePackages = [];
 
-  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-  services.fstrim.enable = lib.mkDefault true;
-  hardware.enableRedistributableFirmware = lib.mkDefault true;
+  intel_cpu.enable = true;
+  ssd.enable = true;
 
   # GPU IDs
   hardware.nvidia.prime = {
