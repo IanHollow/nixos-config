@@ -19,21 +19,17 @@
   environment = {
     systemPackages = with pkgs;
       [
-        # Desktop Environment
-        waybar
-        #eww-wayland
-        rofi-wayland
         # Settings Programs
         pavucontrol
         playerctl
         networkmanagerapplet
         blueman
-        dconf
 
         # nix editor packages
         nixpkgs-fmt
         rnix-lsp
         alejandra
+
         # Command Line Programs
         wget
         curl
@@ -56,8 +52,6 @@
         ]);
   };
 
-  programs.dconf.enable = true;
-
   nix = {
     # Nix Package Manager Settings
     settings.auto-optimise-store = true;
@@ -72,15 +66,13 @@
     settings.experimental-features = ["nix-command" "flakes"]; # Enable Flakes
     settings.keep-outputs = true;
     settings.keep-derivations = true;
-
-    package = pkgs.nixVersions.unstable;
   };
 
   nixpkgs.config.allowUnfree = true; # Allow Proprietary Software.
 
   home-manager.users.${vars.user} = {
     # Home-Manager Settings
-    home.stateVersion = "23.05";
+    home.stateVersion = "23.11";
     programs.home-manager.enable = true;
   };
 
@@ -90,5 +82,5 @@
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "23.05"; # Did you read the comment?
+  system.stateVersion = "23.11"; # Did you read the comment?
 }
