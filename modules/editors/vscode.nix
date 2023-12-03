@@ -33,6 +33,7 @@
         # Git
         "git.openRepositoryInParentFolders" = "always";
         "git.autofetch" = true;
+        "git.confirmSync" = false;
 
         # Nix
         "[nix]"."editor.tabSize" = 2;
