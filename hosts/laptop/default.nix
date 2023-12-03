@@ -10,6 +10,7 @@
     ++ (import ../../modules/desktops)
     ++ (import ../../modules/editors)
     ++ (import ../../modules/input-components)
+    ++ (import ../../modules/programming)
     ++ (import ../../modules/programs)
     ++ (import ../../modules/security)
     ++ (import ../../modules/services)
@@ -70,5 +71,8 @@
       # Apps
       firefox # Browser
       bitwarden # Password Manager
+      zoom-us # Video Conferencing
+      slack # Messaging
+      telegram-desktop # Messaging
     ]);
 }

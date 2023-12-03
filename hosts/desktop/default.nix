@@ -10,6 +10,7 @@
     ++ (import ../../modules/desktops)
     ++ (import ../../modules/editors)
     ++ (import ../../modules/input-components)
+    ++ (import ../../modules/programming)
     ++ (import ../../modules/programs)
     ++ (import ../../modules/security)
     ++ (import ../../modules/services)
@@ -18,6 +19,8 @@
 
   # Desktop Evironment / Desktop Manager
   hyprland.enable = true;
+  # gnome.enable = true;
+  # plasma.enable = true;
 
   # Enable the GPU
   nvidia_gpu.enable = true;
@@ -54,11 +57,14 @@
       okular # PDF Viewer
       gwenview # Image Viewer
       mpv # Video Player
-      anki-bin
+      anki-bin # Flashcard Program
     ]
     ++ (with unstable; [
       # Apps
       firefox # Browser
       bitwarden # Password Manager
+      zoom-us # Video Conferencing
+      slack # Messaging
+      telegram-desktop # Messaging
     ]);
 }
