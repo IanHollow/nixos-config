@@ -9,6 +9,8 @@ in {
   # import the flake's module for your system
   imports = [inputs.spicetify-nix.nixosModules.default];
 
+  # TODO: add options to enable/disable spotify and spicetify
+
   # configure spicetify :)
   programs.spicetify = {
     theme = spicePkgs.themes.Ziro;
