@@ -4,9 +4,13 @@
   vars,
   inputs,
   config,
+  system,
+  nix-vscode-extensions,
   ...
 }: {
-  home-manager.users.${vars.user} = {
+  home-manager.users.${vars.user} = let
+    vscode-flake-extensions = inputs.nix-vscode-extensions.extensions.${system};
+  in {
     programs.vscode = {
       enable = true;
       enableUpdateCheck = false;
@@ -62,7 +66,16 @@
         # Markdown
         "[markdown]"."editor.tabSize" = 2;
       };
-      extensions = with pkgs.vscode-extensions; [
+
+      # Extensions
+      # the package vscode-flake-extensions has multiple options for extensions
+      # most importantly there are vscode marketplace extensions and open vsx extensions
+      # additionally there are release versions and pre-release versions
+      # however the release do not seem to work
+      # here is a link to the documentation for the flake:
+      # https://github.com/nix-community/nix-vscode-extensions#extensions
+      # NOTE: make sure that the author names are in lowercase
+      extensions = with vscode-flake-extensions.vscode-marketplace; [
         # C and CPP
         ms-vscode.cpptools
 
@@ -70,6 +83,11 @@
         ms-python.python
         ms-python.vscode-pylance
         ms-toolsai.jupyter
+
+        # JavaScript & TypeScript
+        ms-vscode.vscode-typescript-next
+        dbaeumer.vscode-eslint
+        wix.vscode-import-cost
 
         # Nix
         jnoortheen.nix-ide
@@ -80,12 +98,19 @@
         pkief.material-icon-theme
 
         # Extra
+        christian-kohler.path-intellisense
+        visualstudioexptteam.vscodeintellicode
         github.copilot
+        github.copilot-chat
 
-        # HTML
+        # HTML & CSS
+        bradlc.vscode-tailwindcss
+
+        # Language Packs
+        ms-ceintl.vscode-language-pack-ja # TODO: enable this if user wants japanese
       ];
 
-      package = pkgs.vscodium.override {
+      package = unstable.vscodium.override {
         commandLineArgs = "--password-store='gnome' --enable-wayland-ime";
       };
     };
