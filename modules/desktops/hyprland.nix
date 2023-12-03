@@ -15,6 +15,10 @@
 }:
 with lib;
 with host; {
+  # import the hyprland module
+  imports = [inputs.hyprland.nixosModules.default];
+
+  # define custom option for hyprland
   options = {
     hyprland = {
       enable = mkOption {
@@ -25,12 +29,12 @@ with host; {
   };
 
   config = mkIf (config.hyprland.enable) {
-    wlwm.enable = true; # Define that the Wayland Window Manager is used
+    wlwm.enable = true; # Define Wayland Window Manager as enabled
 
     # Start Hyprland from TTY1
+    # TODO: check if this is needed still since greetd is used
     environment.loginShellInit = let
-      # Command to start Hyprland
-      exec = "exec dbus-launch Hyprland";
+      exec = "exec dbus-launch Hyprland"; # Command to start Hyprland
     in ''
       if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
         ${exec}
@@ -86,85 +90,55 @@ with host; {
       swaylock # Lock Screen
       wl-clipboard # Clipboard
       wlr-randr # Monitor Settings
-      xdg-utils # XDG Utilities
-      mako # Notifications
+      xdg-utils # XDG Utilities needed for xdg-open
     ];
 
-    # TODO: configure hyprland by enabling/disabling
-    #       user made options for other packages or configurations
+    # TODO: configure hyprland by enabling/disabling user made options for other packages or configurations
 
-    # setup swaylock
-    security.pam.services.swaylock = {
-      text = ''
-        auth include login
-      '';
-    };
+    # enable mako
+    # enable rofi
 
     # Start greetd on TTY7
     services.greetd = {
       enable = true;
-      settings = {
-        default_session = {
-          command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --time-format '%I:%M %p | %a • %h | %F' --cmd Hyprland";
-          user = vars.user;
-        };
+      vt = 7; # TTY7
+      settings.default_session = {
+        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --time-format '%I:%M %p | %a • %h | %F' --cmd Hyprland";
       };
-      vt = 7;
     };
 
     # XDG Desktop Portal
     xdg.portal = {
       enable = true;
-      extraPortals = [pkgs.xdg-desktop-portal-gtk];
-    };
 
-    programs = {
-      hyprland = {
-        # Window Manager
-        enable = true;
-        package = inputs.hyprland.packages.${pkgs.system}.hyprland;
-        nvidiaPatches = config.nvidia_gpu.enable;
+      extraPortals = [
+        pkgs.xdg-desktop-portal-gtk # GTK Portal
+      ];
+
+      config.hyprland = {
+        default = ["hyprland" "gtk"];
       };
     };
 
+    # Hyprland Desktop Manager
+    programs.hyprland = {
+      enable = true;
+      package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+      portalPackage = unstable.xdg-desktop-portal-hyprland;
+    };
+
+    # Disable Sleep & Hibernation
     systemd.sleep.extraConfig = ''
       AllowSuspend=no
       AllowHibernation=no
       AllowSuspendThenHibernate=no
       AllowHybridSleep=no
-    ''; # Disable Sleep & Hibernation
+    '';
 
+    # Cache for the Hyprland Flake
     nix.settings = {
       substituters = ["https://hyprland.cachix.org"];
       trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
-    }; # Cache
-
-    home-manager.users.${vars.user} = {
-      programs.swaylock.settings = {
-        #image = "$HOME/.config/wall";
-        color = "000000f0";
-        font-size = "24";
-        indicator-idle-visible = false;
-        indicator-radius = 100;
-        indicator-thickness = 20;
-        inside-color = "00000000";
-        inside-clear-color = "00000000";
-        inside-ver-color = "00000000";
-        inside-wrong-color = "00000000";
-        key-hl-color = "79b360";
-        line-color = "000000f0";
-        line-clear-color = "000000f0";
-        line-ver-color = "000000f0";
-        line-wrong-color = "000000f0";
-        ring-color = "ffffff50";
-        ring-clear-color = "bbbbbb50";
-        ring-ver-color = "bbbbbb50";
-        ring-wrong-color = "b3606050";
-        text-color = "ffffff";
-        text-ver-color = "ffffff";
-        text-wrong-color = "ffffff";
-        show-failed-attempts = true;
-      };
     };
   };
 }
