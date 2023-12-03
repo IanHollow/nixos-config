@@ -45,12 +45,8 @@ in {
 
         # TODO: Check what packages are needed
         # Add Extra Packages for Nvidia
-        extraPackages = with pkgs; [
-          nvidia-vaapi-driver
-          vaapiVdpau
-          libva
-          libva-utils
-        ];
+        extraPackages = with pkgs; [nvidia-vaapi-driver libva libva-utils];
+        extraPackages32 = with pkgs.pkgsi686Linux; [nvidia-vaapi-driver];
       };
 
       # Load nvidia driver for Xorg and Wayland
