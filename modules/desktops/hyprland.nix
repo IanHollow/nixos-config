@@ -9,12 +9,10 @@
   pkgs,
   unstable,
   vars,
-  host,
   inputs,
   ...
 }:
-with lib;
-with host; {
+with lib; {
   # import the hyprland module
   imports = [inputs.hyprland.nixosModules.default];
 
@@ -93,10 +91,9 @@ with host; {
       xdg-utils # XDG Utilities needed for xdg-open
     ];
 
-    # TODO: configure hyprland by enabling/disabling user made options for other packages or configurations
-
-    # enable mako
-    # enable rofi
+    # enable custom options
+    mako.enable = true; # Notifications
+    rofi.enable = true; # Application Launcher & Other Menus
 
     # Start greetd on TTY7
     services.greetd = {
