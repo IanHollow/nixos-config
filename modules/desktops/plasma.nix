@@ -74,10 +74,6 @@ with lib; {
           QT_AUTO_SCREEN_SCALE_FACTOR = "1";
           QT_QPA_PLATFORM = "wayland;xcb";
 
-          # Firefox
-          MOZ_ENABLE_WAYLAND = "1";
-          MOZ_WEBRENDER = "1";
-
           # ozone-based browsers & electron apps
           NIXOS_OZONE_WL = "1";
         }
