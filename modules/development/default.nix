@@ -1,3 +1,4 @@
 [
   ./python.nix
+  ./c.nix
 ]

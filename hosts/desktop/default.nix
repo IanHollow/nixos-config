@@ -7,10 +7,11 @@
   imports =
     [./hardware-configuration.nix]
     ++ (import ../../modules/hardware)
+    ++ (import ../../modules/boot)
     ++ (import ../../modules/desktops)
     ++ (import ../../modules/editors)
     ++ (import ../../modules/input-components)
-    ++ (import ../../modules/programming)
+    ++ (import ../../modules/development)
     ++ (import ../../modules/programs)
     ++ (import ../../modules/security)
     ++ (import ../../modules/services)
@@ -18,40 +19,33 @@
     ++ (import ../../modules/theming);
 
   # Desktop Evironment / Desktop Manager
-  hyprland.enable = true;
+  hyprland = {
+    enable = true;
+    monitors = {
+      # Set the monitor to the primary monitor
+      primary = {
+        enable = true;
+        name = "DP-1";
+        resolution = {
+          width = 2560;
+          height = 1440;
+        };
+        refreshRate = 165;
+        colorDepth = 10;
+      };
+    };
+  };
   # gnome.enable = true;
   # plasma.enable = true;
-
-  # Enable the GPU
-  nvidia_gpu.enable = true;
 
   # Enable Audio
   pipewire.enable = true;
 
-  # TODO: Add Plymouth
+  # Enable Bootloader
+  grub.enable = true;
 
-  # Enable bootloader
-  boot = {
-    # Boot Options
-    loader = {
-      efi = {
-        canTouchEfiVariables = true;
-        efiSysMountPoint = "/boot";
-      };
-      # TODO: Theme Grub
-      grub = {
-        # Grub Dual Boot
-        enable = true;
-        devices = ["nodev"];
-        efiSupport = true;
-        useOSProber = true; # Find All boot Options
-        configurationLimit = 10;
-        default = 0; # chooses nixos for boot (set 2 to boot to another OS (windows) if desired)
-      };
-      timeout = 5;
-    };
-    kernelPackages = pkgs.linuxPackages_6_5;
-  };
+  # Set the Kernel
+  boot.kernelPackages = pkgs.linuxPackages_latest;
 
   # System-Wide Packages
   environment.systemPackages = with pkgs;
@@ -64,10 +58,12 @@
     ]
     ++ (with unstable; [
       # Apps
-      firefox # Browser
       bitwarden # Password Manager
       zoom-us # Video Conferencing
       slack # Messaging
       telegram-desktop # Messaging
     ]);
+
+  # Enable Firefox
+  firefox.enable = true;
 }

@@ -7,10 +7,11 @@
   imports =
     [./hardware-configuration.nix]
     ++ (import ../../modules/hardware)
+    ++ (import ../../modules/boot)
     ++ (import ../../modules/desktops)
     ++ (import ../../modules/editors)
     ++ (import ../../modules/input-components)
-    ++ (import ../../modules/programming)
+    ++ (import ../../modules/development)
     ++ (import ../../modules/programs)
     ++ (import ../../modules/security)
     ++ (import ../../modules/services)
@@ -36,27 +37,11 @@
   # Enable Laptop Features
   laptop.enable = true;
 
-  # Enable bootloader
-  boot = {
-    # Boot Options
-    loader = {
-      efi = {
-        canTouchEfiVariables = true;
-        efiSysMountPoint = "/boot";
-      };
-      grub = {
-        # Grub Dual Boot
-        enable = true;
-        devices = ["nodev"];
-        efiSupport = true;
-        useOSProber = true; # Find All boot Options
-        configurationLimit = 10;
-        default = 0; # chooses nixos for boot (set 2 to boot to another OS if installed)
-      };
-      timeout = 5;
-    };
-    kernelPackages = pkgs.linuxPackages_6_5;
-  };
+  # Enable Bootloader
+  grub.enable = true;
+
+  # Set the Kernel
+  boot.kernelPackages = pkgs.linuxPackages_latest;
 
   # System-Wide Packages
   environment.systemPackages = with pkgs;
@@ -69,10 +54,11 @@
     ]
     ++ (with unstable; [
       # Apps
-      firefox # Browser
       bitwarden # Password Manager
       zoom-us # Video Conferencing
       slack # Messaging
       telegram-desktop # Messaging
     ]);
+
+  firefox.enable = true;
 }
