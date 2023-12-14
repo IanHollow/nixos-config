@@ -3,33 +3,53 @@
   vars,
   ...
 }: {
+  # Set the default shell for the user
   users.users.${vars.user} = {
     shell = pkgs.zsh;
   };
 
-  programs = {
-    zsh = {
-      enable = true;
-      autosuggestions.enable = true;
-      syntaxHighlighting.enable = true;
-      enableCompletion = true;
-      histSize = 100000;
+  programs.zsh.enable = true;
 
-      ohMyZsh = {
-        # Plug-ins
+  # TODO: redo the config for zsh
+  home-manager.users.${vars.user} = {config, ...}: {
+    programs.zsh = {
+      enable = true;
+
+      # Default Plugins
+      enableAutosuggestions = true;
+      enableCompletion = true;
+      historySubstringSearch.enable = true;
+      syntaxHighlighting.enable = true;
+
+      shellAliases = {
+        "ls" = "ls --color --group-directories-first";
+      };
+
+      history = {
+        size = 99999;
+        save = 99999;
+      };
+
+      # Oh My Zsh Plugins
+      oh-my-zsh = {
         enable = true;
         plugins = ["git"];
       };
 
-      shellInit = ''
-        # Spaceship
-        source ${pkgs.spaceship-prompt}/share/zsh/site-functions/prompt_spaceship_setup
-        autoload -U promptinit; promptinit
-        # Hook direnv
-        #emulate zsh -c "$(direnv hook zsh)"
+      # More Plugins
+      plugins = [
+        {
+          name = "powerlevel10k";
+          src = pkgs.zsh-powerlevel10k;
+          file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
+        }
+      ];
 
-        #eval "$(direnv hook zsh)"
-      ''; # Theming
+      initExtra = ''
+        [[ ! -f /home/${vars.user}/.p10k.zsh ]] || source /home/${vars.user}/.p10k.zsh
+      '';
     };
+
+    home.file."/home/${vars.user}/.p10k.zsh".source = ./.p10k.zsh;
   };
 }
