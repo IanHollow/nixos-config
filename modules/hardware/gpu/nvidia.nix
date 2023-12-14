@@ -73,7 +73,7 @@ in {
 
         # The Nvidia settings menu,
         # accessible via `nvidia-settings`.
-        nvidiaSettings = false;
+        nvidiaSettings = true;
 
         # Uses beta version if it is newer than the production version
         package = nvidiaPackage;
