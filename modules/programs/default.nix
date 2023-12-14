@@ -2,6 +2,8 @@
   ./spotify.nix
   ./kitty.nix
   ./discord.nix
+  ./firefox.nix
   ./mako
   ./rofi
+  ./minecraft.nix
 ]
