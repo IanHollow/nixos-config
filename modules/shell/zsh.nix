@@ -10,7 +10,7 @@
 
   programs.zsh.enable = true;
 
-  # TODO: redo the config for zsh
+  # TODO: redo the config for zsh. Find a better way to do powerlevel10k or find a new theme
   home-manager.users.${vars.user} = {config, ...}: {
     programs.zsh = {
       enable = true;
