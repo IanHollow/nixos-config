@@ -18,7 +18,7 @@
 
     # Theme & color schema
     # TODO: change theme and test it
-    home.file.".local/share/fcitx5/themes".source = "${inputs.catppuccin-fcitx5}/src";
+    home.file."/home/${vars.user}/.local/share/fcitx5/themes".source = "${inputs.catppuccin-fcitx5}/src";
     home.file."${config.xdg.configHome}/fcitx5/conf/classicui.conf".source = ./classicui.conf;
 
     # every time fcitx5 switch input method, it will modify ~/.config/fcitx5/profile file,
