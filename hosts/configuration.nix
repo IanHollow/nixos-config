@@ -19,53 +19,53 @@
   environment = {
     systemPackages = with pkgs;
       [
-        # Settings Programs
-        pavucontrol
-        playerctl
-        networkmanagerapplet
-        blueman
-
-        # nix editor packages
-        nixpkgs-fmt
-        rnix-lsp
-        alejandra
-
         # Command Line Programs
-        wget
+        busybox
         curl
-        zip
-        unzip
         neofetch
         htop
         git
         gh
-
-        # Programming
-        gcc
-        gnumake
-        valgrind
-        gdb
-        # Other Programs
-        ranger
       ]
       ++ (with unstable; [
         ]);
   };
 
   nix = {
-    # Nix Package Manager Settings
-    settings.auto-optimise-store = true;
-
     gc = {
       # Garbage Collection
       automatic = true;
       dates = "weekly";
       options = "--delete-older-than 7d";
+      randomizedDelaySec = "30min";
     };
+    # Nix Package Manager Settings
+    settings = rec {
+      auto-optimise-store = true;
+      experimental-features = ["nix-command" "flakes"]; # Enable Flakes
 
-    settings.experimental-features = ["nix-command" "flakes"]; # Enable Flakes
-    settings.keep-outputs = true;
-    settings.keep-derivations = true;
+      keep-derivations = true;
+      keep-outputs = true;
+
+      builders-use-substitutes = true;
+      cores = lib.mkDefault 0;
+      max-jobs = lib.mkDefault "auto";
+      use-xdg-base-directories = true;
+      trusted-public-keys = [
+        "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+        "nixpkgs-wayland.cachix.org-1:3lwxaILxMRkVhehr5StQprHdEo4IrE8sRho9R9HOLYA="
+        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+        "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
+      ];
+      trusted-substituters = [
+        "https://cache.nixos.org"
+        "https://nixpkgs-wayland.cachix.org"
+        "https://nix-community.cachix.org"
+        "https://cache.garnix.io"
+      ];
+      substituters = trusted-substituters;
+      trusted-users = ["@wheel" "${vars.user}" "root"];
+    };
   };
 
   nixpkgs.config.allowUnfree = true; # Allow Proprietary Software.
