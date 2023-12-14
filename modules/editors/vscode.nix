@@ -8,9 +8,7 @@
   nix-vscode-extensions,
   ...
 }: {
-  home-manager.users.${vars.user} = let
-    vscode-flake-extensions = inputs.nix-vscode-extensions.extensions.${system};
-  in {
+  home-manager.users.${vars.user} = {
     programs.vscode = {
       enable = true;
       enableUpdateCheck = false;
@@ -18,7 +16,6 @@
       enableExtensionUpdateCheck = false;
       userSettings = {
         # Miscellanious
-        "window.titleBarStyle" = "custom"; # Helps with stability on wayland
         "files.autoSave" = "onFocusChange"; # Save on change of focus i.e. switching files/windows
         "editor.formatOnSave" = true; # Format on save (may be annoying for some people)
         "editor.inlineSuggest.enabled" = true;
@@ -31,8 +28,10 @@
         "terminal.integrated.fontFamily" = "CaskaydiaCove NF";
 
         # Theme
+        "window.titleBarStyle" = "custom"; # Helps with stability on wayland
         "workbench.colorTheme" = "Gruvbox Dark Hard";
         "workbench.iconTheme" = "material-icon-theme";
+        "terminal.integrated.cursorStyle" = "line";
 
         # Git
         "git.openRepositoryInParentFolders" = "always";
@@ -42,6 +41,7 @@
         # Nix
         "[nix]"."editor.tabSize" = 2;
         "nix.enableLanguageServer" = true;
+        "nix.serverPath" = "rnix-lsp";
 
         # C and CPP
         "[c]"."editor.tabSize" = 4;
@@ -49,6 +49,7 @@
         "C_Cpp.default.intelliSenseMode" = "linux-gcc-x64";
         "C_Cpp.default.cStandard" = "c99";
         "C_Cpp.codeAnalysis.clangTidy.enabled" = true;
+        "C_Cpp.default.compilerPath" = "${pkgs.gcc}/bin/gcc";
 
         # Python
         "[python]"."editor.tabSize" = 4;
@@ -68,47 +69,53 @@
       };
 
       # Extensions
-      # the package vscode-flake-extensions has multiple options for extensions
-      # most importantly there are vscode marketplace extensions and open vsx extensions
-      # additionally there are release versions and pre-release versions
-      # however the release do not seem to work
-      # here is a link to the documentation for the flake:
-      # https://github.com/nix-community/nix-vscode-extensions#extensions
-      # NOTE: make sure that the author names are in lowercase
-      extensions = with vscode-flake-extensions.vscode-marketplace; [
-        # C and CPP
-        ms-vscode.cpptools
+      extensions = with pkgs.vscode-extensions;
+        [
+          # C and CPP
+          ms-vscode.cpptools # If installed from vscode flake it will not work
 
-        # Python
-        ms-python.python
-        ms-python.vscode-pylance
-        ms-toolsai.jupyter
+          # Python
+          ms-python.python # Not tested yet
+          ms-python.vscode-pylance # Not tested yet
+          ms-toolsai.jupyter # Not tested yet
 
-        # JavaScript & TypeScript
-        ms-vscode.vscode-typescript-next
-        dbaeumer.vscode-eslint
-        wix.vscode-import-cost
+          # JavaScript & TypeScript
+          dbaeumer.vscode-eslint # Not tested yet
+          wix.vscode-import-cost # Not tested yet
 
-        # Nix
-        jnoortheen.nix-ide
-        kamadorueda.alejandra
+          # Nix
+          jnoortheen.nix-ide
+          kamadorueda.alejandra
 
-        # Theming
-        jdinhlife.gruvbox
-        pkief.material-icon-theme
+          # Theming
+          jdinhlife.gruvbox
+          pkief.material-icon-theme
 
-        # Extra
-        christian-kohler.path-intellisense
-        visualstudioexptteam.vscodeintellicode
-        github.copilot
-        github.copilot-chat
+          # Extra
+          github.copilot
+        ]
+        # the package vscode-flake-extensions has multiple options for extensions
+        # most importantly there are vscode marketplace extensions and open vsx extensions
+        # additionally there are release versions and pre-release versions
+        # however the release do not seem to work
+        # here is a link to the documentation for the flake:
+        # https://github.com/nix-community/nix-vscode-extensions#extensions
+        # NOTE: make sure that the author names are in lowercase
+        ++ (with inputs.nix-vscode-extensions.extensions.${system}.vscode-marketplace; [
+          # JavaScript & TypeScript
+          ms-vscode.vscode-typescript-next # Not tested yet
 
-        # HTML & CSS
-        bradlc.vscode-tailwindcss
+          # Extra
+          christian-kohler.path-intellisense # Not tested yet
+          visualstudioexptteam.vscodeintellicode # Not tested yet
 
-        # Language Packs
-        ms-ceintl.vscode-language-pack-ja # TODO: enable this if user wants japanese
-      ];
+          # HTML & CSS
+          bradlc.vscode-tailwindcss # Not tested yet
+
+          # Language Packs
+          # TODO: enable this if user wants a specific language for nixos
+          ms-ceintl.vscode-language-pack-ja # Not tested yet
+        ]);
 
       package = unstable.vscodium.override {
         commandLineArgs = "--password-store='gnome' --enable-wayland-ime";
@@ -117,6 +124,8 @@
   };
 
   # Extra Packages that vscode extensions will fail without
+  # TODO: add options to enable and disable programming languages
+  #       so that most of these are already installed
   environment.systemPackages = with pkgs; [
     # kamadorueda.alejandra
     alejandra
@@ -133,7 +142,9 @@
     rnix-lsp
   ];
 
-  # needed for store VS Code auth token
-  programs.seahorse.enable = !config.plasma.enable;
-  services.gnome.gnome-keyring.enable = true;
+  # kering needed for some extensions
+  keyring.enable = true;
+
+  # enable nix-ld for extenstions with non-nix binaries
+  programs.nix-ld.enable = true;
 }
