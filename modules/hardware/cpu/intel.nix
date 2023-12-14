@@ -17,7 +17,7 @@ with lib; {
   config = mkIf (config.intel_cpu.enable) {
     boot.kernelModules = ["kvm-intel"];
 
-    hardware.enableRedistributableFirmware = true;
-    hardware.cpu.intel.updateMicrocode = config.hardware.enableRedistributableFirmware;
+    hardware.enableRedistributableFirmware = lib.mkDefault true;
+    hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
   };
 }

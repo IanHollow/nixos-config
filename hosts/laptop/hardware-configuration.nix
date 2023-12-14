@@ -5,6 +5,7 @@
   modulesPath,
   host,
   vars,
+  system,
   ...
 }: {
   imports = [
@@ -16,7 +17,6 @@
   boot.kernelModules = ["kvm-intel"];
   boot.extraModulePackages = [];
 
-  intel_cpu.enable = true;
   ssd.enable = true;
 
   # GPU IDs
@@ -63,7 +63,7 @@
   # add user to networkmanager group
   users.users.${vars.user}.extraGroups = ["networkmanager"];
 
-  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+  nixpkgs.hostPlatform = lib.mkDefault system;
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
-  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  intel_cpu.enable = true;
 }

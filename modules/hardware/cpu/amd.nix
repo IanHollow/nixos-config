@@ -17,7 +17,7 @@ with lib; {
   config = mkIf (config.amd_cpu.enable) {
     boot.kernelModules = ["kvm-amd"];
 
-    hardware.enableRedistributableFirmware = true;
-    hardware.cpu.amd.updateMicrocode = config.hardware.enableRedistributableFirmware;
+    hardware.enableRedistributableFirmware = lib.mkDefault true;
+    hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
   };
 }

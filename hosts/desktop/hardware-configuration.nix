@@ -5,6 +5,7 @@
   modulesPath,
   host,
   vars,
+  system,
   ...
 }: {
   imports = [
@@ -18,9 +19,6 @@
 
   # Enable the GPU
   nvidia_gpu.enable = true;
-
-  # Enable the CPU
-  amd_cpu.enable = true;
 
   # Enable the SSD
   ssd.enable = true;
@@ -65,7 +63,8 @@
   # add user to networkmanager group
   users.users.${vars.user}.extraGroups = ["networkmanager"];
 
-  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-  powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
-  hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  nixpkgs.hostPlatform = lib.mkDefault system;
+  powerManagement.cpuFreqGovernor = lib.mkDefault "powersave"; # TODO: figure out more about this option
+  # Enable the CPU
+  amd_cpu.enable = true;
 }
