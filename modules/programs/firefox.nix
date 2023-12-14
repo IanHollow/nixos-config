@@ -72,13 +72,13 @@ with lib; {
 
               extensions = with nixos_config.nur.repos.rycee.firefox-addons; [
                 # Privacy
-                ublock-origin # adblocker
+                ublock-origin # adblocker # TODO: configure the settings for this extension
                 canvasblocker # prevent canvas fingerprinting
                 decentraleyes # load cdn resources locally
 
                 # YouTube
                 sponsorblock # skip parts of youtube videos
-                improved-tube # improve youtube experience
+                # improved-tube # improve youtube experience # TODO: look for alternatives as this broke my youtube at one point
 
                 # GitHub
                 octotree
