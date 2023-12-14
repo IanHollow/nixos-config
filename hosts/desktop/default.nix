@@ -22,7 +22,6 @@
   hyprland = {
     enable = true;
     monitors = {
-      # Set the monitor to the primary monitor
       primary = {
         enable = true;
         name = "DP-1";
@@ -35,8 +34,6 @@
       };
     };
   };
-  # gnome.enable = true;
-  # plasma.enable = true;
 
   # Enable Audio
   pipewire.enable = true;

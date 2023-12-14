@@ -13,11 +13,9 @@
   ];
 
   boot.initrd.availableKernelModules = ["nvme" "thunderbolt" "xhci_pci" "usbhid" "usb_storage" "sd_mod" "ums_realtek"];
-  boot.initrd.kernelModules = ["i915"];
+  boot.initrd.kernelModules = ["i915"]; # TODO: see if the i915 module is needed
   boot.kernelModules = ["kvm-intel"];
   boot.extraModulePackages = [];
-
-  ssd.enable = true;
 
   # GPU IDs
   hardware.nvidia.prime = {
@@ -26,16 +24,32 @@
     nvidiaBusId = "PCI:1:0:0";
   };
 
+  # Enable the GPUs
+  nvidia_gpu = {
+    enable = true;
+    prime_render_offload.enable = true;
+  };
+  intel_gpu = {
+    enable = true;
+    integrated.enable = true;
+  };
+
+  # Enable the SSD
+  ssd.enable = true;
+
+  # Set the root partition
   fileSystems."/" = {
     device = "/dev/disk/by-label/nixos";
     fsType = "ext4";
   };
 
+  # Set the boot partition
   fileSystems."/boot" = {
     device = "/dev/disk/by-label/boot";
     fsType = "vfat";
   };
 
+  # Set the swap partition
   swapDevices = [{device = "/dev/disk/by-label/swap";}];
 
   # Networking
@@ -64,6 +78,8 @@
   users.users.${vars.user}.extraGroups = ["networkmanager"];
 
   nixpkgs.hostPlatform = lib.mkDefault system;
-  powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
+  powerManagement.cpuFreqGovernor = lib.mkDefault "powersave"; # TODO: figure out more about this option
+
+  # Enable the CPU
   intel_cpu.enable = true;
 }

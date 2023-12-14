@@ -19,16 +19,20 @@
     ++ (import ../../modules/theming);
 
   # Desktop Evironment / Desktop Manager
-  hyprland.enable = true;
-
-  # Enable the GPU
-  nvidia_gpu = {
+  hyprland = {
     enable = true;
-    prime_render_offload.enable = true;
-  };
-  intel_gpu = {
-    enable = true;
-    integrated.enable = true;
+    monitors = {
+      primary = {
+        enable = true;
+        name = "eDP-1";
+        resolution = {
+          width = 3072;
+          height = 1920;
+        };
+        refreshRate = 60;
+        colorDepth = 10;
+      };
+    };
   };
 
   # Enable Audio
@@ -41,7 +45,7 @@
   grub.enable = true;
 
   # Set the Kernel
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = pkgs.linuxKernel.packages.linux_zen;
 
   # System-Wide Packages
   environment.systemPackages = with pkgs;
@@ -60,5 +64,6 @@
       telegram-desktop # Messaging
     ]);
 
+  # Enable Firefox
   firefox.enable = true;
 }

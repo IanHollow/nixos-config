@@ -65,6 +65,7 @@
 
   nixpkgs.hostPlatform = lib.mkDefault system;
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave"; # TODO: figure out more about this option
+
   # Enable the CPU
   amd_cpu.enable = true;
 }
