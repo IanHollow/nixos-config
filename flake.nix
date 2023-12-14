@@ -8,6 +8,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nur.url = github:nix-community/NUR;
+
     hyprland = {
       url = "github:hyprwm/Hyprland";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
@@ -20,6 +22,11 @@
 
     nix-vscode-extensions = {
       url = "github:nix-community/nix-vscode-extensions";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
+    getchoo = {
+      url = "github:getchoo/nix-exprs";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
