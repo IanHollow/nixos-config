@@ -158,12 +158,13 @@ with lib; {
     rofi.enable = true; # Application Launcher & Other Menus
 
     # Start greetd on TTY7
+    # TODO: configure this more
     services.greetd = {
       enable = true;
       vt = 7; # TTY7
       settings.default_session = {
         command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --time-format '%I:%M %p | %a • %h | %F' --cmd Hyprland";
-        user = vars.user;
+        user = vars.user; # TODO: this does not work or at I think it does not work
       };
     };
 
@@ -202,6 +203,7 @@ with lib; {
         # Configure the Settings
         # Docs:
         # https://wiki.hyprland.org/Configuring/Variables/
+        # TODO: tell hyprland which gpu to use for desktop rendering
         settings = let
           playerctl = "${pkgs.playerctl}/bin/playerctl";
           wpctl = "${pkgs.wireplumber}/bin/wpctl";
@@ -418,6 +420,7 @@ with lib; {
             # Calculate scale # TODO: Make this better later
             # scale = (trivial.min height width) / 1080.0;
             scale = 1.35; # This is a temporary fix for me while I work on a better calculation
+            # TODO: their should be a scale override option as some scales have issues
           in
             with builtins; [
               "${toString name}, ${toString height}x${toString width}@${toString refreshRate}, 0x0, ${toString scale}, bitdepth, ${toString colorDepth}"

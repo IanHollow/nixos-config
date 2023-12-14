@@ -23,8 +23,8 @@
         busybox
         curl
         neofetch
-        htop
-        git
+        htop # TODO: configure htop or find a better alternative also allow for gpu monitoring
+        git # TODO: add git and gh to the development folder with a configuation applied
         gh
       ]
       ++ (with unstable; [
