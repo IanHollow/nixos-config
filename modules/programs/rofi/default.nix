@@ -18,7 +18,7 @@ with lib; {
 
   config = mkIf (config.rofi.enable) {
     home-manager.users."${vars.user}" = let
-      nix_config = config; # to prevent home-manager from overwriting the config
+      nixos_config = config; # to prevent home-manager from overwriting the config
     in
       {
         config,
@@ -29,7 +29,7 @@ with lib; {
         programs.rofi = {
           enable = true;
           package =
-            if nix_config.wlwm.enable
+            if nixos_config.wlwm.enable
             then pkgs.rofi-wayland
             else pkgs.rofi;
           theme = "gruvbox-dark-hard";
