@@ -37,6 +37,8 @@ in {
       ./desktop
       ./configuration.nix
 
+      inputs.nur.nixosModules.nur
+
       home-manager.nixosModules.home-manager
       {
         # Home-Manager Module
@@ -61,6 +63,8 @@ in {
       # Modules Used
       ./laptop
       ./configuration.nix
+
+      inputs.nur.nixosModules.nur
 
       home-manager.nixosModules.home-manager
       {
