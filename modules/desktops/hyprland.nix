@@ -182,14 +182,6 @@ with lib; {
       };
     };
 
-    # TODO: create hyprland config in non home-manager config to see if flickering is fixed
-    # Hyprland Desktop Manager
-    # programs.hyprland = {
-    #   enable = true;
-    #   package = inputs.hyprland.packages.${pkgs.system}.hyprland;
-    #   portalPackage = unstable.xdg-desktop-portal-hyprland;
-    # };
-
     home-manager.users.${vars.user} = {
       # NOTE: importing the home-manager modules for hyprland flake prevents using settings field
 
