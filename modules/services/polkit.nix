@@ -2,6 +2,8 @@
   # Enable polkit
   security.polkit.enable = true;
 
+  # TODO: change this to gnome polkit
+
   # Enable polkit-kde
   environment.systemPackages = with pkgs; [
     polkit-kde-agent
