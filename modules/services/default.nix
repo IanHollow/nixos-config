@@ -1,4 +1,0 @@
-[
-  ./polkit.nix
-  ./keyring.nix
-]

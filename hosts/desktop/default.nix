@@ -14,7 +14,6 @@
     ++ (import ../../modules/development)
     ++ (import ../../modules/programs)
     ++ (import ../../modules/security)
-    ++ (import ../../modules/services)
     ++ (import ../../modules/shell)
     ++ (import ../../modules/theming);
 

@@ -14,7 +14,6 @@
     ++ (import ../../modules/development)
     ++ (import ../../modules/programs)
     ++ (import ../../modules/security)
-    ++ (import ../../modules/services)
     ++ (import ../../modules/shell)
     ++ (import ../../modules/theming);
 
@@ -54,7 +53,7 @@
       okular # PDF Viewer
       gwenview # Image Viewer
       mpv # Video Player
-      anki-bin
+      anki-bin # Flashcard App
     ]
     ++ (with unstable; [
       # Apps

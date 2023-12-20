@@ -21,5 +21,10 @@ with lib; {
 
     # GUI for keyring
     programs.seahorse.enable = !config.plasma.enable; # Plasma has its own keyring GUI
+
+    # TODO: start the pam service for the keyring
+    # NOTE: this hasn't been working & another solution is needed
+    # greetd
+    # security.pam.services.greetd.enableGnomeKeyring = true;
   };
 }
