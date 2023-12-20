@@ -38,7 +38,7 @@ with lib; {
             default = "DP-1";
             description = ''
               The name of the primary monitor.
-              Example: DP-1, HDMI-1, eDP-1.
+              Example: DP-1, HDMI-A-1, eDP-1.
               Use "hyprctl monitors all" to list all monitors.
             '';
           };
@@ -75,9 +75,9 @@ with lib; {
     # set environment variables for the session
     environment.sessionVariables = let
       nvidia_vars =
-        # TODO: change this if statement when I make better options
-        # Check if NVIDIA is the only GPU or Main (kind of not full proof yet)
-        if (config.nvidia_gpu.enable && !config.intel_gpu.integrated.enable)
+        # TODO: change this if statement to check if a multi-gpu setup is being used (the multi-gpu setup is another TODO)
+        # Check if NVIDIA is the only GPU used (not a full proof solution yet read the TODO above)
+        if (config.nvidia_gpu.enable && !config.intel_gpu.enable)
         then let
           vrr_vars =
             if (config.hyprland.monitors.primary.vrr)
@@ -131,6 +131,9 @@ with lib; {
 
           # ozone-based browsers & electron apps
           NIXOS_OZONE_WL = "1";
+
+          # TODO: add these variables to the config based on user options
+          # WLR_DRM_DEVICES = "/dev/dri/card0";
         }
 
         # Extra Variables
@@ -173,7 +176,7 @@ with lib; {
       enable = true;
 
       extraPortals = [
-        unstable.xdg-desktop-portal-hyprland # Hyprland Portal
+        unstable.xdg-desktop-portal-hyprland # Hyprland Portal - NOTE: Only needed for Home Manager
         pkgs.xdg-desktop-portal-gtk # GTK Portal
       ];
 
@@ -185,6 +188,7 @@ with lib; {
     home-manager.users.${vars.user} = {
       # NOTE: importing the home-manager modules for hyprland flake prevents using settings field
 
+      # TODO: switch to using hyprland throught NixOS instead of home-manager
       # enable the hyprland configuration
       wayland.windowManager.hyprland = {
         # Enable Hyprland
@@ -222,10 +226,10 @@ with lib; {
             gaps_out = gap_size;
 
             # Border color for active windows
-            "col.active_border" = "rgba(014F86FF)";
+            "col.active_border" = "rgba(33ccffee) rgba(00ff99ee) 45deg";
 
             # Border color for inactive windows
-            "col.inactive_border" = "rgba(454559FF)";
+            "col.inactive_border" = "rgba(595959aa)";
 
             # Hide cursor timeout (in seconds). Set to 0 for never
             cursor_inactive_timeout = 0;
@@ -397,12 +401,10 @@ with lib; {
 
             # the split (side/top) will not change regardless of what happens to the container
             preserve_split = true;
-
-            # Default split ratio on window open. 1 means even 50/50 split. (0.1 - 1.9)
-            default_split_ratio = 1.2;
           };
 
           # Set the monitor settings
+          # TODO: Add laptop lid settings
           monitor = let
             name = config.hyprland.monitors.primary.name;
             height = config.hyprland.monitors.primary.resolution.height;
@@ -411,18 +413,29 @@ with lib; {
             colorDepth = config.hyprland.monitors.primary.colorDepth;
             # Calculate scale # TODO: Make this better later
             # scale = (trivial.min height width) / 1080.0;
-            scale = 1.35; # This is a temporary fix for me while I work on a better calculation
+            scale = 2; # This is a temporary fix for me while I work on a better calculation
             # TODO: their should be a scale override option as some scales have issues
           in
             with builtins; [
-              "${toString name}, ${toString height}x${toString width}@${toString refreshRate}, 0x0, ${toString scale}, bitdepth, ${toString colorDepth}"
+              # Primary Monitor
+              "${toString name}, ${toString width}x${toString height}@${toString refreshRate}, 0x0, ${toString scale}, bitdepth, ${toString colorDepth}"
+
+              # Other Monitors
+              "HDMI-A-1, 1920x1080@60, ${toString width}x0, 1, bitdepth, 10"
             ];
 
           # Set Keybindings
-          bind = [
+          bind = let
+            # TODO: Add another way to launch rofi for nvidia offload
+            nvidiaOffload =
+              if (config.nvidia_gpu.enable && config.nvidia_gpu.prime_render_offload.enable)
+              then "nvidia-offload"
+              else "";
+          in [
             # Main keybindings
             "${mainMod}, Q, exec, ${pkgs.kitty}/bin/kitty" # TODO: make this based on default terminal
             "${mainMod}, R, exec, ${pkgs.rofi-wayland}/bin/rofi -show drun"
+            "${mainMod} SHIFT, R, exec, ${nvidiaOffload} ${pkgs.rofi-wayland}/bin/rofi -show drun"
             "${mainMod}, C, killactive,"
             "${mainMod}, M, exit"
 
@@ -445,16 +458,16 @@ with lib; {
             "${mainMod}, 0, workspace, 10"
 
             # Move active window to a workspace
-            "${mainMod}_SHIFT, 1, movetoworkspace, 1"
-            "${mainMod}_SHIFT, 2, movetoworkspace, 2"
-            "${mainMod}_SHIFT, 3, movetoworkspace, 3"
-            "${mainMod}_SHIFT, 4, movetoworkspace, 4"
-            "${mainMod}_SHIFT, 5, movetoworkspace, 5"
-            "${mainMod}_SHIFT, 6, movetoworkspace, 6"
-            "${mainMod}_SHIFT, 7, movetoworkspace, 7"
-            "${mainMod}_SHIFT, 8, movetoworkspace, 8"
-            "${mainMod}_SHIFT, 9, movetoworkspace, 9"
-            "${mainMod}_SHIFT, 0, movetoworkspace, 10"
+            "${mainMod} SHIFT, 1, movetoworkspace, 1"
+            "${mainMod} SHIFT, 2, movetoworkspace, 2"
+            "${mainMod} SHIFT, 3, movetoworkspace, 3"
+            "${mainMod} SHIFT, 4, movetoworkspace, 4"
+            "${mainMod} SHIFT, 5, movetoworkspace, 5"
+            "${mainMod} SHIFT, 6, movetoworkspace, 6"
+            "${mainMod} SHIFT, 7, movetoworkspace, 7"
+            "${mainMod} SHIFT, 8, movetoworkspace, 8"
+            "${mainMod} SHIFT, 9, movetoworkspace, 9"
+            "${mainMod} SHIFT, 0, movetoworkspace, 10"
 
             # Media Keys
             ",XF86AudioPlay, exec, ${playerctl} play-pause"
