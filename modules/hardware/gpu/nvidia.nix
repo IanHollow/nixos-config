@@ -6,14 +6,7 @@
   inputs,
   ...
 }:
-with lib; let
-  nverProduction = config.boot.kernelPackages.nvidiaPackages.stable.version;
-  nverBeta = config.boot.kernelPackages.nvidiaPackages.beta.version;
-  nvidiaPackage =
-    if (lib.versionOlder nverBeta nverProduction)
-    then config.boot.kernelPackages.nvidiaPackages.production
-    else config.boot.kernelPackages.nvidiaPackages.beta;
-in {
+with lib; {
   options = {
     # Enable Nvidia GPU
     nvidia_gpu = {
@@ -43,16 +36,26 @@ in {
         driSupport = true;
         driSupport32Bit = true;
 
-        # TODO: Check what packages are needed
         # Add Extra Packages for Nvidia
-        extraPackages = with pkgs; [nvidia-vaapi-driver libva libva-utils];
-        extraPackages32 = with pkgs.pkgsi686Linux; [nvidia-vaapi-driver];
+        extraPackages = with pkgs; [
+          nvidia-vaapi-driver
+        ];
+        extraPackages32 = with pkgs.pkgsi686Linux; [
+          nvidia-vaapi-driver
+        ];
       };
 
       # Load nvidia driver for Xorg and Wayland
       services.xserver.videoDrivers = ["nvidia"];
 
-      hardware.nvidia = {
+      hardware.nvidia = let
+        nverProduction = config.boot.kernelPackages.nvidiaPackages.stable.version;
+        nverBeta = config.boot.kernelPackages.nvidiaPackages.beta.version;
+        nvidiaPackage =
+          if (lib.versionOlder nverBeta nverProduction)
+          then config.boot.kernelPackages.nvidiaPackages.production
+          else config.boot.kernelPackages.nvidiaPackages.beta;
+      in {
         # Modesetting is required.
         modesetting.enable = true;
 
@@ -60,9 +63,10 @@ in {
         powerManagement.enable = config.laptop.enable;
         # Fine-grained power management. Turns off GPU when not in use.
         # Experimental and only works on modern Nvidia GPUs (Turing or newer).
-        powerManagement.finegrained = config.laptop.enable;
+        # Requires Nvidia offload to be enabled.
+        powerManagement.finegrained = config.hardware.nvidia.prime.offload.enable || config.hardware.nvidia.prime.reverseSync.enable;
 
-        # Use the NVidia open source kernel module (not to be confused with the
+        # Use the Nvidia open source kernel module (not to be confused with the
         # independent third-party "nouveau" open source driver).
         # Support is limited to the Turing and later architectures. Full list of
         # supported GPUs is at:
@@ -78,17 +82,60 @@ in {
         # Uses beta version if it is newer than the production version
         package = nvidiaPackage;
       };
+
+      # Nvidia DRM (Direct Rendering Manager) KMS (Kernel Mode Setting) support
+      # NOTE: This is NOT the same as the other DRM (Digital Rights Management)
+      # Based on Arch Wiki: https://wiki.archlinux.org/title/NVIDIA#DRM_kernel_mode_setting
+      # Add kernel parameters to enable DRM KMS support
+      boot.kernelParams = [
+        "nvidia_drm.modeset=1" # Based on Arch Wiki (Already enabled by NixOS but as "nvidia-drm.modeset=1")
+        "nvidia_drm.fbdev=1" # Based on Arch Wiki
+      ];
+
+      # Early loading KMS support for Nvidia
+      # Based on Arch Wiki: https://wiki.archlinux.org/title/NVIDIA#Early_loading
+      boot.initrd.kernelModules = [
+        "nvidia"
+        "nvidia_modeset"
+        "nvidia_uvm"
+        "nvidia_drm"
+      ];
+
+      # Add the extra Nvidia kernel modules
+      # Based on NixOS Wiki: https://nixos.wiki/wiki/Nvidia#Booting_to_Text_Mode
+      boot.extraModulePackages = [config.boot.kernelPackages.nvidia_x11];
     })
 
     # Enable PRIME render offload
     (mkIf (config.nvidia_gpu.prime_render_offload.enable) {
       hardware.nvidia.prime = {
         offload = {
-          enable = true;
-          enableOffloadCmd = true; # Provides `nvidia-offload` command.
+          enable = true; # Cannot be enabled alongside Nvidia Prime Sync
+          # enableOffloadCmd = true; # Provides `nvidia-offload` command. (can rewrite to make own version of command with more env vars)
         };
+
+        # sync.enable = true; # Cannot be enabled alongside Nvidia Prime Offload
+
+        # reverseSync.enable = true;
+        # allowExternalGpu = false; # Enable if using an external GPU
+
         # hardware-configuration.nix should specify the bus ID for integrated & nvidia gpus
       };
+
+      # Install Extra Packages for Nvidia
+      environment.systemPackages = [
+        # Rewrote `nvidia-offload` command to include more environment variables
+        # Based NixOS Wiki: https://nixos.wiki/wiki/Nvidia
+        # Aditional env var of LIBVA_DRIVER_NAME=nvidia due to nvidia-vaapi-driver
+        (pkgs.writeShellScriptBin "nvidia-offload" ''
+          export __NV_PRIME_RENDER_OFFLOAD=1
+          export __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0
+          export __GLX_VENDOR_LIBRARY_NAME=nvidia
+          export __VK_LAYER_NV_optimus=NVIDIA_only
+          export LIBVA_DRIVER_NAME=nvidia
+          exec "$@"
+        '')
+      ];
     })
   ];
 }

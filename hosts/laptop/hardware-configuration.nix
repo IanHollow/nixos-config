@@ -13,15 +13,15 @@
   ];
 
   boot.initrd.availableKernelModules = ["nvme" "thunderbolt" "xhci_pci" "usbhid" "usb_storage" "sd_mod" "ums_realtek"];
-  boot.initrd.kernelModules = ["i915"]; # TODO: see if the i915 module is needed
+  boot.initrd.kernelModules = [];
   boot.kernelModules = ["kvm-intel"];
   boot.extraModulePackages = [];
 
   # GPU IDs
   hardware.nvidia.prime = {
     # Make sure to use the correct Bus ID values for your system!
-    intelBusId = "PCI:0:2:0";
-    nvidiaBusId = "PCI:1:0:0";
+    intelBusId = "PCI:0:2:0"; # card 0
+    nvidiaBusId = "PCI:1:0:0"; # card 1
   };
 
   # Enable the GPUs
@@ -32,6 +32,10 @@
   intel_gpu = {
     enable = true;
     integrated.enable = true;
+
+    # For my Intel Gen11 CPU
+    guc.enable = true;
+    huc.enable = true;
   };
 
   # Enable the SSD
