@@ -100,6 +100,11 @@ with lib; {
 
               # Set extra preferences for security, privacy, simplicity, and performance
               # some options are set in the policies section
+              # Many of these options are from https://github.com/arkenfox/user.js
+              # Many of the titles for the options will corrispond to the titles in the Arkenfox GitHub repo for the user.js file
+              # NOTE: the user.js file overrides options at launch of Firefox.
+              #       Removing or commenting out an option in the user.js NixOS config will not revert the option in Firefox.
+              #       To revert an option you must either change the option in Firefox about:config or modify the profile prefs.js file.
               extraConfig = toUserJs {
                 # Homepage
                 "browser.newtabpage.activity-stream.feeds.section.topstories" = false;
@@ -244,10 +249,10 @@ with lib; {
                 "browser.tabs.searchclipboardfor.middleclick" = false;
 
                 # Downloads
-                # "browser.download.useDownloadDir" = false; # This could be annoying
+                # "browser.download.useDownloadDir" = false; # This can be annoying
                 "browses.download.alwaysOpenPanel" = false;
                 "browser.download.manager.addToRecentDocs" = false;
-                # "browser.download.always_ask_before_handling_new_types" = false; # This could be annoying
+                # "browser.download.always_ask_before_handling_new_types" = false; # This can be annoying
 
                 # Extensions
                 "extensions.enabledScopes" = 5;
@@ -259,7 +264,7 @@ with lib; {
                 # Enable RFP
                 "privacy.resistFingerprinting" = true;
                 "privacy.resistFingerprinting.block_mozAddonManager" = true;
-                # "privacy.resistFingerprinting.letterboxing" = true; # This could be annoying
+                # "privacy.resistFingerprinting.letterboxing" = true; # This can be annoying
                 "browser.link.open_newwindow" = 3;
                 "browser.link.open_newwindow.restriction" = 0;
 
@@ -271,19 +276,21 @@ with lib; {
                 "browser.urlbar.showSearchTerms.enabled" = false;
 
                 # Hardware Acceleration
-                # TODO: check if NVIDIA drivers are installed
-                # TODO: Add option to NVIDIA drivers to enable AV1
-                "gfx.webrender.all" = true;
-                "media.ffmpeg.vaapi.enabled" = true;
-                "media.rdd-ffmpeg.enabled" = true;
-                "media.av1.enabled" = true;
-                "gfx.x11-egl.force-enabled" = true;
-                "widget.dmabuf.force-enabled" = true;
+                # These options are from the firefox Arch Wiki as well as the nvidia-vaapi-driver GitHub page
+                # even though some of these options are from an Nvidia GPU guide they should work for most modern GPUs
+                # https://wiki.archlinux.org/title/Firefox#Hardware_video_acceleration
+                # https://github.com/elFarto/nvidia-vaapi-driver/#firefox
+                "gfx.webrender.all" = true; # Enforce hardware WebRender (Default false)
+                "media.ffmpeg.vaapi.enabled" = true; # Enable VA-API (Default false)
+                "media.av1.enabled" = true; # Enable AV1 Decoding (already assumming new enough hardware) (Default true)
+                "gfx.x11-egl.force-enabled" = true; # Enforce the EGL backend (Default false)
+                "widget.dmabuf.force-enabled" = true; # Enforce DMABUF (Default false)
 
                 # Fonts
-                "gfx.font_rendering.fontconfig.max_generic_substitutions" = 127;
-                "gfx.font_rendering.opentype_svg.enabled" = false;
-                "font.name-list.emoji" = "Noto Color Emoji";
+                # From Firefox Arch Wiki: https://wiki.archlinux.org/title/Firefox#Font_troubleshooting
+                "gfx.font_rendering.fontconfig.max_generic_substitutions" = 127; # Increase the maximum number of generic substitutions (127 is the highest possible value)
+                "font.name-list.emoji" = "emoji"; # Use system emoji font
+                "gfx.font_rendering.opentype_svg.enabled" = false; # Prevent Mozilla font from interfering with system emoji font
 
                 # Enable pre-release CSS
                 "layout.css.has-selector.enabled" = true;
@@ -311,14 +318,35 @@ with lib; {
                     ];
 
                     icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
-                    definedAliases = ["@np"];
+                    definedAliases = ["nixpackages" "nixpkgs" "@np"];
+                  };
+
+                  "Nix Options" = {
+                    urls = [
+                      {
+                        template = "https://search.nixos.org/options";
+                        params = [
+                          {
+                            name = "type";
+                            value = "packages";
+                          }
+                          {
+                            name = "query";
+                            value = "{searchTerms}";
+                          }
+                        ];
+                      }
+                    ];
+
+                    icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
+                    definedAliases = ["nixoptions" "nixopts" "@no"];
                   };
 
                   "NixOS Wiki" = {
                     urls = [{template = "https://nixos.wiki/index.php?search={searchTerms}";}];
                     iconUpdateURL = "https://nixos.wiki/favicon.png";
                     updateInterval = 24 * 60 * 60 * 1000; # every day
-                    definedAliases = ["@nw"];
+                    definedAliases = ["nixwiki" "@nw"];
                   };
 
                   "Brave" = {
@@ -332,8 +360,10 @@ with lib; {
                     urls = [{template = "https://www.youtube.com/results?search_query={searchTerms}";}];
                     iconUpdateURL = "https://www.youtube.com/favicon.ico";
                     updateInterval = 24 * 60 * 60 * 1000; # every day
-                    definedAliases = ["@yt"];
+                    definedAliases = ["@youtube" "@yt"];
                   };
+
+                  # TODO: add GitHub search engine
 
                   # builtin engines only support specifying one additional alias
                   "Google".metaData.alias = "@g";
@@ -368,7 +398,6 @@ with lib; {
         if (config.nvidia_gpu.enable)
         then {
           MOZ_DISABLE_RDD_SANDBOX = "1";
-          LIBVA_DRIVER_NAME = "nvidia";
         }
         else {};
     in
