@@ -9,9 +9,9 @@
     ...
   }: {
     home.activation.removeExistingGTKConfig = lib.hm.dag.entryBefore ["checkLinkTargets"] ''
-      rm -f "${config.xdg.configHome}/gtk-2.0/gtkrc"
-      rm -f "${config.xdg.configHome}/gtk-3.0/settings.ini"
-      rm -f "${config.xdg.configHome}/gtk-4.0/settings.ini"
+      rm -rf "${config.xdg.configHome}/gtk-2.0"
+      rm -rf "${config.xdg.configHome}/gtk-3.0"
+      rm -rf "${config.xdg.configHome}/gtk-4.0"
     '';
 
     dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark";
@@ -39,6 +39,7 @@
         package = pkgs.papirus-icon-theme;
       };
 
+      # TODO: change the theme and test it
       theme = {
         package = pkgs.gruvbox-gtk-theme;
 
