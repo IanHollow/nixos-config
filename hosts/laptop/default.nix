@@ -10,6 +10,7 @@
     ++ (import ../../modules/boot)
     ++ (import ../../modules/desktops)
     ++ (import ../../modules/editors)
+    ++ (import ../../modules/general)
     ++ (import ../../modules/input-components)
     ++ (import ../../modules/development)
     ++ (import ../../modules/programs)
