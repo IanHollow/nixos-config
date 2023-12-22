@@ -2,6 +2,7 @@
   pkgs,
   unstable,
   config,
+  inputs,
   lib,
   vars,
   ...
@@ -22,6 +23,7 @@ with lib; {
   config = mkIf (config.firefox.enable) {
     home-manager.users.${vars.user} = let
       nixos_config = config; # to prevent home-manager from overwriting the config
+      main_profile = "default"; # the name of the main profile
     in
       {
         config,
@@ -65,8 +67,8 @@ with lib; {
             inherit (lib) concatLines mapAttrsToList;
             toUserJs = kv: concatLines (mapAttrsToList (k: v: "user_pref(${toJSON k}, ${toJSON v});") kv);
           in {
-            # default profile
-            default = {
+            # main profile
+            ${main_profile} = {
               name = "${vars.user}";
               isDefault = true;
 
@@ -294,6 +296,11 @@ with lib; {
 
                 # Enable pre-release CSS
                 "layout.css.has-selector.enabled" = true;
+
+                # Theming
+                # "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
+                # "layers.acceleration.force-enabled" = true;
+                # "svg.context-properties.content.enabled" = true;
               };
 
               # search engines
@@ -351,15 +358,17 @@ with lib; {
 
                   "Brave" = {
                     urls = [{template = "https://search.brave.com/search?q={searchTerms}";}];
-                    iconUpdateURL = "https://brave.com/static-assets/images/brave-favicon.png";
-                    updateInterval = 24 * 60 * 60 * 1000; # every day
+                    icon = "${pkgs.papirus-icon-theme}/share/icons/Papirus-Dark/24x24/apps/brave.svg";
+                    # iconUpdateURL = "https://brave.com/static-assets/images/brave-favicon.png";
+                    # updateInterval = 24 * 60 * 60 * 1000; # every day
                     definedAliases = ["@brave"];
                   };
 
                   "YouTube" = {
                     urls = [{template = "https://www.youtube.com/results?search_query={searchTerms}";}];
-                    iconUpdateURL = "https://www.youtube.com/favicon.ico";
-                    updateInterval = 24 * 60 * 60 * 1000; # every day
+                    icon = "${pkgs.papirus-icon-theme}/share/icons/Papirus-Dark/24x24/apps/youtube.svg";
+                    # iconUpdateURL = "https://www.youtube.com/favicon.ico";
+                    # updateInterval = 24 * 60 * 60 * 1000; # every day
                     definedAliases = ["@youtube" "@yt"];
                   };
 
@@ -381,6 +390,10 @@ with lib; {
             };
           };
         };
+
+        # Theming:
+        # Write custom theme to the ${main_profile} profile
+        # home.file."/home/${vars.user}/.mozilla/firefox/${main_profile}/chrome".source = ;
       };
 
     # environment variables
