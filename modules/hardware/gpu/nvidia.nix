@@ -87,22 +87,16 @@ with lib; {
       # NOTE: This is NOT the same as the other DRM (Digital Rights Management)
       # Based on Arch Wiki: https://wiki.archlinux.org/title/NVIDIA#DRM_kernel_mode_setting
       # Add kernel parameters to enable DRM KMS support
+      # NOTE: The kernel patameters for Nvidia use "-" instead of "_"
       boot.kernelParams = [
-        "nvidia_drm.modeset=1" # Based on Arch Wiki (Already enabled by NixOS but as "nvidia-drm.modeset=1")
-        "nvidia_drm.fbdev=1" # Based on Arch Wiki
+        # "nvidia-drm.modeset=1" # Based on Arch Wiki (Already enabled by NixOS but as "nvidia-drm.modeset=1")
+        "nvidia-drm.fbdev=1" # Based on Arch Wiki
       ];
 
       # Early loading KMS support for Nvidia
-      # Based on Arch Wiki: https://wiki.archlinux.org/title/NVIDIA#Early_loading
-      boot.initrd.kernelModules = [
-        "nvidia"
-        "nvidia_modeset"
-        "nvidia_uvm"
-        "nvidia_drm"
-      ];
-
-      # Add the extra Nvidia kernel modules
       # Based on NixOS Wiki: https://nixos.wiki/wiki/Nvidia#Booting_to_Text_Mode
+      # Other Nvidia Kernel modules will be handled by NixOS as we don't want to load them out of order
+      boot.initrd.kernelModules = ["nvidia"];
       boot.extraModulePackages = [config.boot.kernelPackages.nvidia_x11];
     })
 
