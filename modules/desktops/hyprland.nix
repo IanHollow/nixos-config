@@ -13,9 +13,6 @@
   ...
 }:
 with lib; {
-  # import the hyprland module fir nixos
-  imports = [inputs.hyprland.nixosModules.default];
-
   # define custom option for hyprland
   options = {
     hyprland = {
@@ -131,9 +128,6 @@ with lib; {
 
           # ozone-based browsers & electron apps
           NIXOS_OZONE_WL = "1";
-
-          # TODO: add these variables to the config based on user options
-          # WLR_DRM_DEVICES = "/dev/dri/card0";
         }
 
         # Extra Variables
@@ -167,7 +161,7 @@ with lib; {
       vt = 7; # TTY7
       settings.default_session = {
         command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --time-format '%I:%M %p | %a • %h | %F' --cmd Hyprland";
-        user = vars.user; # TODO: this does not work or at I think it does not work
+        # user = vars.user; # TODO: this does not work or at I think it does not work. Find out what the purpose of this is.
       };
     };
 
@@ -176,19 +170,19 @@ with lib; {
       enable = true;
 
       extraPortals = [
-        unstable.xdg-desktop-portal-hyprland # Hyprland Portal - NOTE: Only needed for Home Manager
+        inputs.hyprland-xdph.packages.${pkgs.system}.xdg-desktop-portal-hyprland # Hyprland Portal
         pkgs.xdg-desktop-portal-gtk # GTK Portal
       ];
 
       config.hyprland = {
-        default = ["hyprland" "gtk"];
+        default = [
+          "hyprland"
+          "gtk"
+        ];
       };
     };
 
     home-manager.users.${vars.user} = {
-      # NOTE: importing the home-manager modules for hyprland flake prevents using settings field
-
-      # TODO: switch to using hyprland throught NixOS instead of home-manager
       # enable the hyprland configuration
       wayland.windowManager.hyprland = {
         # Enable Hyprland
@@ -421,7 +415,7 @@ with lib; {
               "${toString name}, ${toString width}x${toString height}@${toString refreshRate}, 0x0, ${toString scale}, bitdepth, ${toString colorDepth}"
 
               # Other Monitors
-              "HDMI-A-1, 1920x1080@60, ${toString width}x0, 1, bitdepth, 10"
+              "HDMI-A-1, 1920x1080@60, ${toString width}x0, 1"
             ];
 
           # Set Keybindings
@@ -478,10 +472,12 @@ with lib; {
 
           binde = [
             # Audio Keys
+            # TODO: add user option to set the max volume limit (current is 1 for 100%)
             ",XF86AudioRaiseVolume, exec, ${wpctl} set-volume -l 1 @DEFAULT_SINK@ 5%+"
             ",XF86AudioLowerVolume, exec, ${wpctl} set-volume @DEFAULT_SINK@ 5%-"
 
             # Brightness Keys
+            # TODO: enable this based on user options
             ",XF86MonBrightnessUp, exec, ${pkgs.lib.getExe pkgs.brightnessctl} set 5%+"
             ",XF86MonBrightnessDown, exec, ${pkgs.lib.getExe pkgs.brightnessctl} set 5%-"
           ];
@@ -493,11 +489,23 @@ with lib; {
           ];
 
           exec-once = [
+            # Fcitx
+            # TODO: make sure startup for fcitx is enabled based upon user options
             "fcitx5 -d --replace"
           ];
 
-          windowrule = [
+          windowrulev2 = [
+            # Fcitx
+            # TODO: make sure windowrulev2 for fcitx is enabled based upon user options
             "pseudo, class:^(fcitx)$"
+
+            # XWayland Video Bridge
+            # DOCS: https://wiki.hyprland.org/Useful-Utilities/Screen-Sharing/#xwayland
+            # TODO: make sure windowrulev2 for XWayland Video Bridge is enabled based upon user options
+            "opacity 0.0 override 0.0 override, class:^(xwaylandvideobridge)$"
+            "noanim, class:^(xwaylandvideobridge)$"
+            "nofocus, class:^(xwaylandvideobridge)$"
+            "noinitialfocus, class:^(xwaylandvideobridge)$"
           ];
         };
       };
