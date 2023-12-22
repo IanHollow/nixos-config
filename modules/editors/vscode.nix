@@ -4,7 +4,6 @@
   vars,
   inputs,
   config,
-  system,
   nix-vscode-extensions,
   ...
 }: {
@@ -27,11 +26,13 @@
         "editor.fontFamily" = "CaskaydiaCove NF";
         "terminal.integrated.fontFamily" = "CaskaydiaCove NF";
 
-        # Theme
+        # Theming
         "window.titleBarStyle" = "custom"; # Helps with stability on wayland
-        "workbench.colorTheme" = "Gruvbox Dark Hard";
         "workbench.iconTheme" = "material-icon-theme";
         "terminal.integrated.cursorStyle" = "line";
+        "workbench.colorTheme" = "Catppuccin Mocha";
+        "catppuccin.accentColor" = "lavender";
+        "editor.semanticHighlighting.enabled" = true;
 
         # Git
         "git.openRepositoryInParentFolders" = "always";
@@ -64,12 +65,15 @@
         "[typescript]"."editor.tabSize" = 2;
         "[typescriptreact]"."editor.tabSize" = 2;
 
+        # Go
+        "gopls"."ui.semanticTokens" = true;
+
         # Markdown
         "[markdown]"."editor.tabSize" = 2;
       };
 
       # Extensions
-      extensions = with pkgs.vscode-extensions;
+      extensions = with unstable.vscode-extensions;
         [
           # C and CPP
           ms-vscode.cpptools # If installed from vscode flake it will not work
@@ -88,7 +92,7 @@
           kamadorueda.alejandra
 
           # Theming
-          jdinhlife.gruvbox
+          catppuccin.catppuccin-vsc
           pkief.material-icon-theme
 
           # Extra
@@ -101,7 +105,7 @@
         # here is a link to the documentation for the flake:
         # https://github.com/nix-community/nix-vscode-extensions#extensions
         # NOTE: make sure that the author names are in lowercase
-        ++ (with inputs.nix-vscode-extensions.extensions.${system}.vscode-marketplace; [
+        ++ (with inputs.nix-vscode-extensions.extensions.${pkgs.system}.vscode-marketplace; [
           # JavaScript & TypeScript
           ms-vscode.vscode-typescript-next # Not tested yet
 
@@ -118,6 +122,7 @@
         ]);
 
       package = unstable.vscodium.override {
+        # TODO: only add commandLineArgs based on config options
         commandLineArgs = "--password-store='gnome' --enable-wayland-ime";
       };
     };

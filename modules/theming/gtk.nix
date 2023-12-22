@@ -1,6 +1,7 @@
 {
   vars,
   pkgs,
+  unstable,
   ...
 }: {
   home-manager.users.${vars.user} = {
@@ -30,7 +31,7 @@
       };
 
       font = {
-        name = "Noto Sans 11";
+        name = "Noto Sans";
         package = pkgs.noto-fonts;
       };
 
@@ -41,14 +42,21 @@
 
       # TODO: change the theme and test it
       theme = {
-        package = pkgs.gruvbox-gtk-theme;
+        # Override the default theme for more customization
+        # DOCS: https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/data/themes/catppuccin-gtk/default.nix
+        package = unstable.catppuccin-gtk.override {
+          accents = ["lavender"];
+          size = "standard";
+          tweaks = [];
+          variant = "mocha";
+        };
 
         # Set the name of the theme
         # make sure the name is correct otherwise gtk theme will not be applied
-        # you can check theme name by running: ls /nix/store/*-${package}-*/share/themes
+        # you can check theme name by running: ls /nix/store/*-${gtk_package_name}-*/share/themes
         # and look for theme based on your configuration
         # if the theme does not apply then you selected the wrong name
-        name = "Gruvbox-Dark-BL";
+        name = "Catppuccin-Mocha-Standard-Lavender-Dark";
       };
     };
   };

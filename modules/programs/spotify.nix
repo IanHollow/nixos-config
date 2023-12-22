@@ -19,8 +19,8 @@ in {
 
   # configure spicetify :)
   programs.spicetify = {
-    theme = spicePkgs.themes.Ziro;
-    colorScheme = "green-dark";
+    theme = spicePkgs.themes.catppuccin;
+    colorScheme = "mocha";
 
     # use spotify from the nixpkgs unstable branch
     spotifyPackage = unstable.spotify;
@@ -31,7 +31,12 @@ in {
 
     enabledExtensions = with spicePkgs.extensions; [
       adblock
-      volumePercentage
+      volumePercentage # Show volume percentage
+      wikify # Show artists wiki page
+      playlistIntersection # Show intersection of two playlists or songs unique to a playlist
+      shuffle # Shuffle without bias
+      seekSong # allows you to seek songs with arrow keys
+      fullAlbumDate # show full album release date
     ];
 
     enabledCustomApps = with spicePkgs.apps; [

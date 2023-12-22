@@ -27,7 +27,7 @@
       # https://github.com/kovidgoyal/kitty-themes/tree/master/themes
       # these themes are installed by home-manager if the `theme` is specified
       # look at the contents of kitty-themes conf files to see theme names
-      theme = "Gruvbox Dark Hard";
+      theme = "Catppuccin-Mocha";
 
       font = {
         name = "CaskaydiaCove Nerd Font";
