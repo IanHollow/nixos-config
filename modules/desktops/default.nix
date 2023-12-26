@@ -1,6 +1,6 @@
 [
   ./options.nix
-  ./hyprland.nix
+  ./hyprland
   ./gnome.nix
   ./plasma.nix
 ]

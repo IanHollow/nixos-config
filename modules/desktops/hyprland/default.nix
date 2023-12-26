@@ -1,7 +1,3 @@
-#
-#  Hyprland Configuration
-#  Enable with "hyprland.enable = true;"
-#
 {
   config,
   lib,
@@ -12,8 +8,14 @@
   inputs,
   ...
 }:
-with lib; {
-  # define custom option for hyprland
+with lib; let
+  nixos_config = config;
+in {
+  imports = [
+    ./config
+  ];
+
+  # define custom options for hyprland
   options = {
     hyprland = {
       enable = mkOption {
@@ -24,6 +26,7 @@ with lib; {
         type = types.bool;
         default = false;
       };
+      # TODO: move monitor options to a seperate module in the hardware modules
       monitors = {
         primary = {
           enable = mkOption {
@@ -66,74 +69,8 @@ with lib; {
     };
   };
 
-  config = mkIf (config.hyprland.enable) {
+  config = mkIf (nixos_config.hyprland.enable) {
     wlwm.enable = true; # Define Wayland Window Manager as enabled
-
-    # set environment variables for the session
-    environment.sessionVariables = let
-      nvidia_vars =
-        # TODO: change this if statement to check if a multi-gpu setup is being used (the multi-gpu setup is another TODO)
-        # Check if NVIDIA is the only GPU used (not a full proof solution yet read the TODO above)
-        if (config.nvidia_gpu.enable && !config.intel_gpu.enable)
-        then let
-          vrr_vars =
-            if (config.hyprland.monitors.primary.vrr)
-            then {
-              __GL_GSYNC_ALLOWED = "1";
-              __GL_VRR_ALLOWED = "1";
-            }
-            else {
-              __GL_GSYNC_ALLOWED = "0";
-              __GL_VRR_ALLOWED = "0";
-            };
-        in
-          mkMerge [
-            # NVIDIA Variables
-            {
-              LIBVA_DRIVER_NAME = "nvidia";
-              GBM_BACKEND = "nvidia-drm";
-              __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-              WLR_NO_HARDWARE_CURSORS = "1";
-            }
-
-            # VRR Variables for NVIDIA
-            vrr_vars
-          ]
-        else {};
-
-      # Check if the user wants to disbale allow_tearing
-      tearing_vars =
-        if (config.hyprland.allowTearing)
-        then {
-          WLR_DRM_NO_ATOMIC = "1";
-        }
-        else {};
-    in
-      # Merge the base variables with the extra variables
-      mkMerge [
-        # Base Variables
-        {
-          # XDG Specifications
-          XDG_SESSION_TYPE = "wayland"; # Also needed for NVIDIA GPUs
-          XDG_CURRENT_DESKTOP = "Hyprland";
-          XDG_SESSION_DESKTOP = "Hyprland";
-
-          # Qt Variables
-          QT_AUTO_SCREEN_SCALE_FACTOR = "1";
-          QT_QPA_PLATFORM = "wayland;xcb";
-          QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
-
-          # Java
-          _JAVA_AWT_WM_NONREPARENTING = "1";
-
-          # ozone-based browsers & electron apps
-          NIXOS_OZONE_WL = "1";
-        }
-
-        # Extra Variables
-        nvidia_vars
-        tearing_vars
-      ];
 
     # install required packages for the Hyprland configuration
     environment.systemPackages = with pkgs; [
@@ -150,12 +87,13 @@ with lib; {
       ranger
     ];
 
-    # enable custom options
+    # enable custom modules through options
     mako.enable = true; # Notifications
     rofi.enable = true; # Application Launcher & Other Menus
 
     # Start greetd on TTY7
-    # TODO: configure this more
+    # TODO: configure greetd better
+    # TODO: move greetd to a seperate module with options
     services.greetd = {
       enable = true;
       vt = 7; # TTY7
@@ -165,36 +103,24 @@ with lib; {
       };
     };
 
-    # XDG Desktop Portal
-    xdg.portal = {
-      enable = true;
+    home-manager.users.${vars.user} = {config, ...}: {
+      # Import the Hyprland Nix module
+      imports = [inputs.hyprland-nix.homeManagerModules.default];
 
-      extraPortals = [
-        inputs.hyprland-xdph.packages.${pkgs.system}.xdg-desktop-portal-hyprland # Hyprland Portal
-        pkgs.xdg-desktop-portal-gtk # GTK Portal
-      ];
-
-      config.hyprland = {
-        default = [
-          "hyprland"
-          "gtk"
-        ];
-      };
-    };
-
-    home-manager.users.${vars.user} = {
       # enable the hyprland configuration
       wayland.windowManager.hyprland = {
         # Enable Hyprland
         enable = true;
         package = inputs.hyprland.packages.${pkgs.system}.hyprland;
         xwayland.enable = true; # Enable XWayland
+        reloadConfig = true;
+        systemdIntegration = true;
 
         # Configure the Settings
         # Docs:
         # https://wiki.hyprland.org/Configuring/Variables/
-        # TODO: tell hyprland which gpu to use for desktop rendering
-        settings = let
+        # TODO: follow github:hyprland-community/hyprland-nix/hm-module/configRenames.nix for new names for hyprland settings/config
+        config = let
           playerctl = "${pkgs.playerctl}/bin/playerctl";
           wpctl = "${pkgs.wireplumber}/bin/wpctl";
           mainMod = "SUPER";
@@ -232,7 +158,7 @@ with lib; {
             layout = "dwindle";
 
             # Screen tearing (default: false)
-            allow_tearing = config.hyprland.allowTearing;
+            allow_tearing = nixos_config.hyprland.allowTearing;
           };
 
           decoration = {
@@ -357,8 +283,10 @@ with lib; {
 
             # Variable Refresh Rate
             # 0 - off, 1 - on, 2 - fullscreen only
-            # TODO: Only enable this if the monitor supports it
-            vrr = 1;
+            vrr =
+              if nixos_config.hyprland.monitors.primary.vrr
+              then 1
+              else 0;
 
             # Animate manual window resizes
             animate_manual_resizes = true;
@@ -400,11 +328,11 @@ with lib; {
           # Set the monitor settings
           # TODO: Add laptop lid settings
           monitor = let
-            name = config.hyprland.monitors.primary.name;
-            height = config.hyprland.monitors.primary.resolution.height;
-            width = config.hyprland.monitors.primary.resolution.width;
-            refreshRate = config.hyprland.monitors.primary.refreshRate;
-            colorDepth = config.hyprland.monitors.primary.colorDepth;
+            name = nixos_config.hyprland.monitors.primary.name;
+            height = nixos_config.hyprland.monitors.primary.resolution.height;
+            width = nixos_config.hyprland.monitors.primary.resolution.width;
+            refreshRate = nixos_config.hyprland.monitors.primary.refreshRate;
+            colorDepth = nixos_config.hyprland.monitors.primary.colorDepth;
             # Calculate scale # TODO: Make this better later
             # scale = (trivial.min height width) / 1080.0;
             scale = 2; # This is a temporary fix for me while I work on a better calculation
@@ -422,16 +350,17 @@ with lib; {
           bind = let
             # TODO: Add another way to launch rofi for nvidia offload
             nvidiaOffload =
-              if (config.nvidia_gpu.enable && config.nvidia_gpu.prime_render_offload.enable)
+              if (nixos_config.nvidia_gpu.enable && nixos_config.nvidia_gpu.prime_render_offload.enable)
               then "nvidia-offload"
               else "";
           in [
             # Main keybindings
             "${mainMod}, Q, exec, ${pkgs.kitty}/bin/kitty" # TODO: make this based on default terminal
-            "${mainMod}, R, exec, ${pkgs.rofi-wayland}/bin/rofi -show drun"
-            "${mainMod} SHIFT, R, exec, ${nvidiaOffload} ${pkgs.rofi-wayland}/bin/rofi -show drun"
+            "${mainMod}, R, exec, pkill rofi || ${pkgs.rofi-wayland}/bin/rofi -show drun"
+            "${mainMod} SHIFT, R, exec, pkill rofi || ${nvidiaOffload} ${pkgs.rofi-wayland}/bin/rofi -show drun"
             "${mainMod}, C, killactive,"
             "${mainMod}, M, exit"
+            "ControlShiftAlt, Delete, exec, pkill wlogout || ${pkgs.wlogout}/bin/wlogout -p layer-shell"
 
             # Move focus with mainMod + arrow keys
             "${mainMod}, left, movefocus, l"
@@ -488,10 +417,24 @@ with lib; {
             "${mainMod}, mouse:273, resizewindow"
           ];
 
-          exec-once = [
+          exec_once = [
             # Fcitx
             # TODO: make sure startup for fcitx is enabled based upon user options
-            "fcitx5 -d --replace"
+            "fcitx5 -d --replace &"
+
+            # Keyring
+            # TODO: make this based off of the keyring user options
+            "${pkgs.gnome.gnome-keyring}/bin/gnome-keyring-daemon --start --components=secrets &"
+
+            # Polkit
+            # TODO: make this startup for polkit based on user options
+            "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1 &"
+
+            # Dbus
+            "${pkgs.dbus}/dbus-upadate-activation-environment --all &"
+
+            # Cursor
+            "hyprctl setcursor ${config.home.pointerCursor.name} ${builtins.toString config.home.pointerCursor.size}"
           ];
 
           windowrulev2 = [
@@ -512,6 +455,7 @@ with lib; {
     };
 
     # Disable Sleep & Hibernation
+    # TODO: make a modules for sleep and hibernation
     systemd.sleep.extraConfig = ''
       AllowSuspend=no
       AllowHibernation=no
