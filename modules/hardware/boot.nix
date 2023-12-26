@@ -6,7 +6,9 @@
   ...
 }:
 with lib; {
-  # define custom option for grub
+  # TODO: add systemd-boot
+
+  # define custom options
   options = {
     grub = {
       enable = mkOption {
@@ -22,7 +24,7 @@ with lib; {
       loader = {
         efi = {
           canTouchEfiVariables = true;
-          efiSysMountPoint = "/boot";
+          efiSysMountPoint = "/boot"; # TODO: make this based on variable so it can be set in hardware-configuration.nix
         };
         # TODO: Theme Grub
         grub = {

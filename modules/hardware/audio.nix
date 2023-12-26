@@ -7,7 +7,7 @@
 }:
 with lib; {
   options = {
-    pipewire = {
+    audio = {
       # Condition if host uses an Nvidia GPU
       enable = mkOption {
         type = types.bool;
@@ -16,7 +16,9 @@ with lib; {
     };
   };
 
-  config = mkIf (config.pipewire.enable) {
+  # TODO: add some sort of mic improvement to remove background noise
+
+  config = mkIf (config.audio.enable) {
     services.pipewire = {
       enable = true;
       alsa.enable = true;
@@ -31,6 +33,6 @@ with lib; {
     # Remove sound.enable or turn it off if you had it set previously, it seems to cause conflicts with pipewire
     sound.enable = false;
     # Disable pulseaudio, it conflicts with pipewire too.
-    hardware.pulseaudio.enable = false;
+    hardware.pulseaudio.enable = mkForce false;
   };
 }
