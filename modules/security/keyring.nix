@@ -22,9 +22,11 @@ with lib; {
     # GUI for keyring
     programs.seahorse.enable = !config.plasma.enable; # Plasma has its own keyring GUI
 
-    # TODO: start the pam service for the keyring
-    # NOTE: this hasn't been working & another solution is needed
-    # greetd
-    # security.pam.services.greetd.enableGnomeKeyring = true;
+    # TODO: the keyring seems to autologin on boot however this can be from two new changes made:
+    #       1. starting the keyring in hyprland config file at login
+    #       2. setting the secrets xdg desktop portal interface to gnome-keyring
+    #
+    #       Which one of these made the keyring autologin on boot.
+    #       Add a message in this file on the findings to help others.
   };
 }
