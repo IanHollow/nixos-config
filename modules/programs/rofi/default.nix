@@ -17,7 +17,7 @@ with lib; {
   };
 
   config = mkIf (config.rofi.enable) {
-    home-manager.users."${vars.user}" = let
+    home-manager.users.${vars.user} = let
       nixos_config = config; # to prevent home-manager from overwriting the config
     in
       {
