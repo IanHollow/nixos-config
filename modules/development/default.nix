@@ -1,4 +1,5 @@
 [
-  ./python.nix
-  ./c.nix
+  ./editors
+  ./languages
+  ./tools
 ]

@@ -123,7 +123,7 @@
 
       package = unstable.vscodium.override {
         # TODO: only add commandLineArgs based on config options
-        commandLineArgs = "--password-store='gnome' --enable-wayland-ime";
+        commandLineArgs = "--password-store=gnome --enable-wayland-ime";
       };
     };
   };
