@@ -14,7 +14,7 @@
 
   boot.initrd.availableKernelModules = ["nvme" "thunderbolt" "xhci_pci" "usbhid" "usb_storage" "sd_mod" "ums_realtek"];
   boot.initrd.kernelModules = [];
-  boot.kernelModules = ["kvm-intel"];
+  boot.kernelModules = ["kvm-intel"]; # TODO: add virtualization support through a module
   boot.extraModulePackages = [];
 
   # GPU IDs
@@ -57,31 +57,17 @@
   swapDevices = [{device = "/dev/disk/by-label/swap";}];
 
   # Networking
-  networking = with host; {
-    useDHCP = lib.mkDefault true;
-    hostName = "nixos";
-    enableIPv6 = false;
-    networkmanager.enable = true;
-    firewall = {
-      enable = true;
-      # if packets are still dropped, they will show up in dmesg
-      logReversePathDrops = true;
-      # wireguard trips rpfilter up
-      extraCommands = ''
-        ip46tables -t mangle -I nixos-fw-rpfilter -p udp -m udp --sport 51820 -j RETURN
-        ip46tables -t mangle -I nixos-fw-rpfilter -p udp -m udp --dport 51820 -j RETURN
-      '';
-      extraStopCommands = ''
-        ip46tables -t mangle -D nixos-fw-rpfilter -p udp -m udp --sport 51820 -j RETURN || true
-        ip46tables -t mangle -D nixos-fw-rpfilter -p udp -m udp --dport 51820 -j RETURN || true
-      '';
-    }; # To load wireguard cert in nm-applet: nmcli connection import type wireguard file <config file>
+  custom_networking = {
+    enable = true;
+    autoHostId = true;
+    wireguard = true;
+    cloudflareDNS = true;
+    radomizeMacAddress = true;
+    wifiPowersave = true;
   };
 
-  # add user to networkmanager group
-  users.users.${vars.user}.extraGroups = ["networkmanager"];
-
   nixpkgs.hostPlatform = lib.mkDefault system;
+  # TODO: firgure out the best way to manage the cpu clock speed on a laptop
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave"; # TODO: figure out more about this option
 
   # Enable the CPU

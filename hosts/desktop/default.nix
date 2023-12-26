@@ -4,21 +4,11 @@
   lib,
   ...
 }: {
-  imports =
-    [./hardware-configuration.nix]
-    ++ (import ../../modules/hardware)
-    ++ (import ../../modules/boot)
-    ++ (import ../../modules/desktops)
-    ++ (import ../../modules/editors)
-    ++ (import ../../modules/general)
-    ++ (import ../../modules/input-components)
-    ++ (import ../../modules/development)
-    ++ (import ../../modules/programs)
-    ++ (import ../../modules/security)
-    ++ (import ../../modules/shell)
-    ++ (import ../../modules/theming);
+  # TODO: add message that explains how this config file works with the custom options that enable modules
 
-  # Desktop Evironment / Desktop Manager
+  imports = [./hardware-configuration.nix];
+
+  # Desktop Evironment
   hyprland = {
     enable = true;
     monitors = {
@@ -36,7 +26,7 @@
   };
 
   # Enable Audio
-  pipewire.enable = true;
+  audio.enable = true;
 
   # Enable Bootloader
   grub.enable = true;
