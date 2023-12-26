@@ -67,6 +67,7 @@
   # the profile config will be overwrited by fcitx5 every time we relogin
   # so we need to use the backup file to restore it every time we relogin
   # create a user service to copy profile-backup to profile at every login
+  # TODO: make this a service inside of home-manager
   systemd.user.services.fcitx5-setup = let
     RestoreBackup = "${pkgs.coreutils}/bin/cp ${config.users.users.${vars.user}.home}/.config/fcitx5/profile-backup ${config.users.users.${vars.user}.home}/.config/fcitx5/profile";
   in {
