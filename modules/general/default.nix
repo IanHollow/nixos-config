@@ -1,3 +1,0 @@
-[
-  ./xwayland.nix
-]
