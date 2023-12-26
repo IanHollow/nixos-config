@@ -5,5 +5,6 @@
   ./firefox.nix
   ./mako
   ./rofi
+  ./wlogout
   ./minecraft.nix
 ]
