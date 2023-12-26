@@ -3,14 +3,23 @@
   vars,
   config,
   ...
-}: {
-  home-manager.users.${vars.user} = {
+}: let
+  nixos_config = config;
+in {
+  # TODO: add options to make this configurable
+
+  home-manager.users.${vars.user} = {config, ...}: {
     home.pointerCursor = {
       package = pkgs.bibata-cursors;
       name = "Bibata-Modern-Classic";
       size = 22;
       gtk.enable = true;
-      x11.enable = config.x11wm.enable;
+      x11.enable = nixos_config.x11wm.enable;
+    };
+
+    home.sessionVariables = {
+      XCURSOR_THEME = config.home.pointerCursor.name;
+      XCURSOR_SIZE = config.home.pointerCursor.size;
     };
   };
 }
