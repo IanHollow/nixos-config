@@ -69,6 +69,8 @@ with lib; {
           # Change wifi backend of Network Manager to iwd
           wifi.backend = "iwd";
 
+          # TODO: configure iwd in the iwd Nixos modules
+
           # Set random mac address
           wifi.macAddress = mkDefault "random";
           ethernet.macAddress = mkDefault "random";
@@ -82,9 +84,11 @@ with lib; {
         hostName = mkDefault host.hostName;
 
         # Host ID config from: github:colemickens/nixcfg/mixins/common.nix
-        hostId = mkIf config.custom_networking.autoHostId (pkgs.lib.concatStringsSep "" (pkgs.lib.take 8 (
-          pkgs.lib.stringToCharacters (builtins.hashString "sha256" config.networking.hostName)
-        )));
+        hostId = with lib.strings; let
+          condition = config.custom_networking.autoHostId;
+          hostName = config.networking.hostName;
+        in
+          mkIf condition (concatStrings (lists.take 8 (stringToCharacters (builtins.hashString "sha256" hostName))));
 
         # Enable Firewall
         firewall = {
