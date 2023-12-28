@@ -2,6 +2,7 @@
   inputs,
   pkgs,
   unstable,
+  config,
   ...
 }: let
   spicePkgs = inputs.spicetify-nix.packages.${pkgs.system}.default;
@@ -43,5 +44,22 @@ in {
       new-releases
       lyrics-plus
     ];
+
+    dontInstall = true;
   };
+
+  # Wrap spicetify with extra arguments and install package
+  # TODO: make this a little bit more elegant and make sure I am wrapping the program correctly
+  environment.systemPackages = let
+    spicetify_pkg = config.programs.spicetify.spicedSpotify;
+    spicetify_wrapped = pkgs.symlinkJoin {
+      name = "spicetify-wrapped";
+      paths = [
+        (pkgs.writeShellScriptBin "spotify" ''exec ${spicetify_pkg}/bin/spotify --enable-features=UseOzonePlatform --ozone-platform=wayland --enable-wayland-ime --disable-gpu'')
+        spicetify_pkg
+      ];
+    };
+  in [
+    spicetify_wrapped
+  ];
 }
