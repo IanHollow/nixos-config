@@ -18,7 +18,7 @@ with lib; {
     };
   };
 
-  # TODO: improve config for firefox
+  # TODO: make this multi-file config
 
   config = mkIf (config.firefox.enable) {
     home-manager.users.${vars.user} = let
@@ -39,12 +39,34 @@ with lib; {
           # Documentation:
           # https://mozilla.github.io/policy-templates/
           policies = {
+            # DisableFirefoxAccounts = true; # TODO: This needs to be based on user option
+            # PasswordManagerEnabled = false; # TODO: This needs to be based on user option
+            CapitivePortal = nixos_config.laptop.enable; # disable captive portal detection on desktops and enable on laptops
             DisablePocket = true;
             DisableTelemetry = true;
             HardwareAcceleration = true;
             DisableFirefoxStudies = true;
             NoDefaultBookmarks = true;
             SearchSuggestEnabled = false;
+            DisableFormHistory = true;
+            DontCheckDefaultBrowser = true;
+            FirefoxHome = {
+              Search = true;
+              TopSites = false;
+              SponsoredTopSites = false;
+              Highlights = false;
+              Pocket = false;
+              SponsoredPocket = false;
+              Snippets = false;
+              Locked = true;
+            };
+            UserMessaging = {
+              WhatsNew = false;
+              ExtensionRecommendations = false;
+              SkipOnboarding = true;
+              MoreFromMozilla = false;
+              Locked = true;
+            };
             FirefoxSuggest = {
               WebSuggestions = false;
               SponsoredSuggestions = false;
@@ -107,19 +129,8 @@ with lib; {
               # NOTE: the user.js file overrides options at launch of Firefox.
               #       Removing or commenting out an option in the user.js NixOS config will not revert the option in Firefox.
               #       To revert an option you must either change the option in Firefox about:config or modify the profile prefs.js file.
+              # TODO: look over all Arkenfox options again and add them to this config with testing of them
               extraConfig = toUserJs {
-                # Homepage
-                "browser.newtabpage.activity-stream.feeds.section.topstories" = false;
-                "browser.newtabpage.activity-stream.feeds.topsites" = false;
-                "browser.newtabpage.activity-stream.default.sites" = "";
-                "browser.newtabpage.activity-stream.showSponsored" = false;
-                "browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
-
-                # Startup
-                # "browser.startup.page" = 0;
-                # "browser.startup.homepage" = "about:blank";
-                # "browser.newtabpage.enabled" = false;
-
                 # GeoLocation
                 "geo.provider.network.url" = "https://location.services.mozilla.com/v1/geolocate?key=%MOZILLA_API_KEY%";
                 "geo.provider.ms-windows-location" = false;
@@ -305,6 +316,8 @@ with lib; {
 
               # search engines
               search = {
+                # TODO: find a way to disable some of the default search engines
+
                 # Define additional search engines
                 engines = {
                   "Nix Packages" = {
