@@ -12,7 +12,11 @@ with lib; let
   nixos_config = config;
 in {
   imports = [
+    inputs.hyprland.nixosModules.default
     ./config
+    ./display-manager.nix
+    ./env.nix
+    ./xdg.nix
   ];
 
   # define custom options for hyprland
@@ -81,7 +85,6 @@ in {
       swaylock # Lock Screen
       wl-clipboard # Clipboard
       wlr-randr # Monitor Settings
-      xdg-utils # XDG Utilities needed for xdg-open
       networkmanagerapplet
       blueman
       ranger
@@ -91,21 +94,11 @@ in {
     mako.enable = true; # Notifications
     rofi.enable = true; # Application Launcher & Other Menus
 
-    # Start greetd on TTY7
-    # TODO: configure greetd better
-    # TODO: move greetd to a seperate module with options
-    services.greetd = {
-      enable = true;
-      vt = 7; # TTY7
-      settings.default_session = {
-        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --time-format '%I:%M %p | %a • %h | %F' --cmd Hyprland";
-        # user = vars.user; # TODO: this does not work or at I think it does not work. Find out what the purpose of this is.
-      };
-    };
-
     home-manager.users.${vars.user} = {config, ...}: {
       # Import the Hyprland Nix module
       imports = [inputs.hyprland-nix.homeManagerModules.default];
+
+      # TODO: fix issue with firefox pop windows becoming full screen
 
       # enable the hyprland configuration
       wayland.windowManager.hyprland = {
@@ -340,9 +333,11 @@ in {
           in
             with builtins; [
               # Primary Monitor
-              "${toString name}, ${toString width}x${toString height}@${toString refreshRate}, 0x0, ${toString scale}, bitdepth, ${toString colorDepth}"
+              # "${toString name}, ${toString width}x${toString height}@${toString refreshRate}, 0x0, ${toString scale}, bitdepth, ${toString colorDepth}"
+              "${toString name}, disable" # this is temporary
 
               # Other Monitors
+              # TODO: add better way to handle other monitors
               "HDMI-A-1, 1920x1080@60, ${toString width}x0, 1"
             ];
 
@@ -360,6 +355,7 @@ in {
             "${mainMod} SHIFT, R, exec, pkill rofi || ${nvidiaOffload} ${pkgs.rofi-wayland}/bin/rofi -show drun"
             "${mainMod}, C, killactive,"
             "${mainMod}, M, exit"
+            "${mainMod}, L, exec, ${pkgs.swaylock}/bin/swaylock"
             "ControlShiftAlt, Delete, exec, pkill wlogout || ${pkgs.wlogout}/bin/wlogout -p layer-shell"
 
             # Move focus with mainMod + arrow keys
