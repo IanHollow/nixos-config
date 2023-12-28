@@ -7,4 +7,5 @@
   ./rofi
   ./wlogout
   ./minecraft.nix
+  ./swaylock.nix
 ]
