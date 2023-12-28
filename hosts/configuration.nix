@@ -20,10 +20,12 @@
     ++ import ../modules/theming
   );
 
+  # TODO: consider removing support for X11 (only support wayland)
+
   users.users.${vars.user} = {
     # System User
     isNormalUser = true;
-    extraGroups = ["wheel" "video" "audio"];
+    extraGroups = ["wheel" "video"];
 
     # Set initial password for the user
     # IMPORTANT: change this with passwd ${username} command for your user

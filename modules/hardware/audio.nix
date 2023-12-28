@@ -3,15 +3,16 @@
   config,
   pkgs,
   unstable,
+  vars,
   ...
 }:
 with lib; {
   options = {
     audio = {
-      # Condition if host uses an Nvidia GPU
       enable = mkOption {
         type = types.bool;
         default = false;
+        description = "Enable audio support";
       };
     };
   };
@@ -30,9 +31,11 @@ with lib; {
 
     # rtkit is optional but recommended
     security.rtkit.enable = true;
-    # Remove sound.enable or turn it off if you had it set previously, it seems to cause conflicts with pipewire
-    sound.enable = false;
-    # Disable pulseaudio, it conflicts with pipewire too.
+
+    # Disable pulseaudio as it conflicts with pipewire
     hardware.pulseaudio.enable = mkForce false;
+
+    # Add user to audio group
+    users.users.${vars.user}.extraGroups = ["audio"];
   };
 }
