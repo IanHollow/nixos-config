@@ -69,7 +69,10 @@
       };
     };
 
-    getchoo.url = "github:getchoo/nix-exprs";
+    getchoo = {
+      url = "github:getchoo/nix-exprs";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
 
     # themes
     catppuccin-fcitx5 = {
