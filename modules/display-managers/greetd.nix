@@ -71,6 +71,7 @@ with lib; {
 
   config = mkMerge [
     # Check that the options are set correctly for the greetd module
+    # TODO: put this inside of the greetd module
     {
       assertions = [
         {
