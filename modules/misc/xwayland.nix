@@ -1,14 +1,20 @@
 {
   pkgs,
   unstable,
-  condig,
+  config,
   lib,
   ...
 }:
 with lib; {
-  # TODO: create option to enable and disable features for xwayland
+  # Define options for xwaylandvideobridge
+  options.xwaylandvideobridge = {
+    enable = mkEnableOption "Enable the xwaylandvideobridge";
+  };
 
-  environment.systemPackages = [
-    unstable.xwaylandvideobridge # XWayland Video Bridge
-  ];
+  config = mkIf (config.xwaylandvideobridge.enable) {
+    # Add xwaylandvideobridge to the system packages
+    environment.systemPackages = [
+      unstable.xwaylandvideobridge # XWayland Video Bridge
+    ];
+  };
 }
