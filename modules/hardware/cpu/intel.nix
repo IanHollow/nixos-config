@@ -5,19 +5,28 @@
 }:
 with lib; {
   # define custom option for intel_cpu
-  options = {
-    intel_cpu = {
+  options.intel_cpu = {
+    enable = mkOption {
+      type = types.bool;
+      default = false;
+    };
+
+    thermald = {
       enable = mkOption {
         type = types.bool;
-        default = false;
+        default = config.laptop.enable;
       };
     };
   };
 
   config = mkIf (config.intel_cpu.enable) {
+    # Enable Intel CPU config
     boot.kernelModules = ["kvm-intel"];
 
-    hardware.enableRedistributableFirmware = lib.mkDefault true;
-    hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+    hardware.enableRedistributableFirmware = mkDefault true;
+    hardware.cpu.intel.updateMicrocode = mkDefault config.hardware.enableRedistributableFirmware;
+
+    # Enable thermald
+    services.thermald.enable = config.intel_cpu.thermald.enable;
   };
 }
