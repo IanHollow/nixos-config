@@ -31,12 +31,6 @@ with lib; {
           in
             hyprland_exec;
         };
-
-        # Enable autoLogin
-        autoLogin = {
-          enable = true;
-          user = vars.user;
-        };
       };
     })
   ];
