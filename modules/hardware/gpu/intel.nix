@@ -19,7 +19,7 @@ with lib; {
       integrated = {
         enable = mkOption {
           type = types.bool;
-          default = config.intel_gpu.enable; # makes sense to assume that intel_gpu is integrated as it is more likely
+          default = true; # makes sense to assume that intel_gpu is integrated as it is more likely
         };
       };
 
