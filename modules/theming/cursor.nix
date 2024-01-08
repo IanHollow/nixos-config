@@ -6,8 +6,6 @@
 }: let
   nixos_config = config;
 in {
-  # TODO: add options to make this configurable
-
   home-manager.users.${vars.user} = {config, ...}: {
     home.pointerCursor = {
       package = pkgs.bibata-cursors;

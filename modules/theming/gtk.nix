@@ -40,7 +40,6 @@
         package = pkgs.papirus-icon-theme;
       };
 
-      # TODO: change the theme and test it
       theme = {
         # Override the default theme for more customization
         # DOCS: https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/data/themes/catppuccin-gtk/default.nix
@@ -65,6 +64,7 @@
   programs.dconf.enable = true;
 
   # For viewing gnome and gtk settings
+  # TODO: add these packages as a debug mode through options
   # environment.systemPackages = with pkgs; [
   #   gnome.gnome-tweaks
   #   gnome.dconf-editor
