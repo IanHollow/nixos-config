@@ -67,9 +67,7 @@ with lib; {
           enable = mkDefault true;
 
           # Change wifi backend of Network Manager to iwd
-          wifi.backend = "iwd";
-
-          # TODO: configure iwd in the iwd Nixos modules
+          wifi.backend = mkDefault "iwd";
 
           # Set random mac address
           wifi.macAddress = mkDefault "random";
@@ -77,6 +75,32 @@ with lib; {
 
           # Enable wifi powersave
           wifi.powersave = mkDefault config.custom_networking.wifiPowersave;
+        };
+
+        # Enable and config iwd
+        wireless.iwd = {
+          # Enable iwd
+          enable = mkDefault true;
+
+          # Define iwd settings
+          settings = {
+            General = {
+              # Must be set to "network" to enable Random MAC Address
+              AddressRandomization = mkIf (config.custom_networking.radomizeMacAddress) "network";
+            };
+
+            Network = {
+              EnableIPv6 = mkDefault (config.networking.enableIPv6 && !config.custom_networking.wireguard);
+            };
+
+            Settings = {
+              # Enable Auto Connect to WiFi
+              AutoConnect = true;
+
+              # Randomize MAC Address
+              AlwaysRandomizeAddress = mkIf (config.custom_networking.radomizeMacAddress) true;
+            };
+          };
         };
 
         # Define Hostname
