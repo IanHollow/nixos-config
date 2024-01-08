@@ -18,12 +18,5 @@ with lib; {
         default = false;
       };
     };
-    laptop = {
-      # Condition if host is a laptop
-      enable = mkOption {
-        type = types.bool;
-        default = false;
-      };
-    };
   };
 }
