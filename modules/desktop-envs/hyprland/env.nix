@@ -13,7 +13,7 @@ with lib; {
       environment.sessionVariables = let
         nvidia_vars =
           # TODO: change this if statement to check if a multi-gpu setup is being used (the multi-gpu setup is another TODO)
-          # Check if NVIDIA is the only GPU used (not a full proof solution yet read the TODO above)
+          # Check if NVIDIA is the only GPU used (not a full proof solution yet read the todo above)
           if (config.nvidia_gpu.enable && !config.intel_gpu.enable)
           then let
             vrr_vars =
@@ -67,8 +67,8 @@ with lib; {
             GDK_BACKEND = "wayland";
 
             # Others
-            CLUTTER_BACKEND = "wayland";
-            SDL_VIDEODRIVER = "wayland";
+            # CLUTTER_BACKEND = "wayland";
+            # SDL_VIDEODRIVER = "wayland";
 
             # Java
             _JAVA_AWT_WM_NONREPARENTING = "1";
