@@ -16,8 +16,6 @@ in {
   #       I only have this problem when the gpu is Intel and not when it's Nvidia
   #       can add the --disable-gpu flag to spotify to fix it but then the gpu is not used at all
 
-  # TODO: find a way to add flags to spotify for fcitx5 to work tested with flag --enable-wayland-ime and it works
-
   # configure spicetify :)
   programs.spicetify = {
     theme = spicePkgs.themes.catppuccin;
@@ -50,6 +48,7 @@ in {
 
   # Wrap spicetify with extra arguments and install package
   # TODO: make this a little bit more elegant and make sure I am wrapping the program correctly
+  # TODO: explain purpose of disable gpu flag
   environment.systemPackages = let
     spicetify_pkg = config.programs.spicetify.spicedSpotify;
     spicetify_wrapped = pkgs.symlinkJoin {
