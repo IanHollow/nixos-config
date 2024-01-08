@@ -1,22 +1,34 @@
 {
   inputs = {
+    # Nix Packages Stable and Unstable
     nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
+    # Nix Systems
     systems.url = "github:nix-systems/default-linux";
 
+    # Nix Flake Utils
     flake-utils = {
       url = "github:numtide/flake-utils";
       inputs.systems.follows = "systems";
     };
 
+    # Nix User Repository (Community Packages)
     nur.url = github:nix-community/NUR;
 
+    # Nix Home Manager
     home-manager = {
       url = "github:nix-community/home-manager/release-23.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Nix Packages for Wayland
+    nixpkgs-wayland = {
+      url = "github:nix-community/nixpkgs-wayland";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
+    # Hyprland
     hyprland-protocols = {
       url = "github:hyprwm/hyprland-protocols";
       inputs = {
@@ -24,7 +36,6 @@
         nixpkgs.follows = "nixpkgs-unstable";
       };
     };
-
     hyprland-xdph = {
       url = "github:hyprwm/xdg-desktop-portal-hyprland";
       inputs = {
@@ -33,7 +44,6 @@
         hyprland-protocols.follows = "hyprland-protocols";
       };
     };
-
     hyprland = {
       url = "github:hyprwm/Hyprland";
       inputs = {
@@ -43,7 +53,6 @@
         xdph.follows = "hyprland-xdph";
       };
     };
-
     hyprland-nix = {
       url = "github:hyprland-community/hyprland-nix";
       inputs = {
@@ -53,6 +62,7 @@
       };
     };
 
+    # Spicetify for Spotify
     spicetify-nix = {
       url = "github:the-argus/spicetify-nix";
       inputs = {
@@ -61,6 +71,7 @@
       };
     };
 
+    # Nix VSCode Extensions
     nix-vscode-extensions = {
       url = "github:nix-community/nix-vscode-extensions";
       inputs = {
@@ -69,12 +80,16 @@
       };
     };
 
-    getchoo = {
-      url = "github:getchoo/nix-exprs";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    # Modrinth Minecraft Launcher
+    getchoo.url = "github:getchoo/nix-exprs";
+
+    # Waybar
+    waybar = {
+      url = "github:Alexays/Waybar";
+      flake = false;
     };
 
-    # themes
+    # Theming
     catppuccin-fcitx5 = {
       url = "github:catppuccin/fcitx5";
       flake = false;
@@ -92,10 +107,10 @@
       user = "ianmh";
     };
   in {
-    nixosConfigurations = ( # NixOS Configurations
+    nixosConfigurations = (
       import ./hosts {
         inherit (nixpkgs) lib;
-        inherit inputs nixpkgs nixpkgs-unstable home-manager vars; # Inherit inputs
+        inherit inputs nixpkgs nixpkgs-unstable home-manager vars;
       }
     );
   };

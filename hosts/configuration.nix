@@ -92,29 +92,32 @@
   };
 
   nix = {
+    # Garbage Collection
     gc = {
-      # Garbage Collection
       automatic = true;
       dates = "weekly";
       options = "--delete-older-than 7d";
       randomizedDelaySec = "30min";
     };
+
     # Nix Package Manager Settings
     settings = let
       # Define trusted public keys for Nix Cache
       my_keys = [
         "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-        "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
+        "nixpkgs-wayland.cachix.org-1:3lwxaILxMRkVhehr5StQprHdEo4IrE8sRho9R9HOLYA="
         "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
+        "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
       ];
 
       # Define the substituters for Nix Cache
       my_substituters = [
         "https://cache.nixos.org"
         "https://nix-community.cachix.org"
-        "https://cache.garnix.io"
+        "https://nixpkgs-wayland.cachix.org"
         "https://hyprland.cachix.org"
+        "https://cache.garnix.io"
       ];
     in {
       auto-optimise-store = true;
@@ -134,10 +137,16 @@
     };
   };
 
-  nixpkgs.config.allowUnfree = true; # Allow Proprietary Software.
+  # Nixpkgs Overlays
+  # nixpkgs.overlays = [
+  #   inputs.nixpkgs-wayland.overlay
+  # ];
 
+  # Allow Proprietary Software.
+  nixpkgs.config.allowUnfree = true;
+
+  # Home-Manager Settings
   home-manager.users.${vars.user} = {
-    # Home-Manager Settings
     home.stateVersion = "23.11";
     programs.home-manager.enable = true;
   };
