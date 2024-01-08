@@ -39,6 +39,14 @@
           "CascadiaCode"
         ];
       })
+
+      # Japanese fonts
+      # Fonts from Arch Wiki: https://wiki.archlinux.org/title/Localization/Japanese
+      ipafont
+      ipaexfont
+      hanazono
+      mplus-outline-fonts.githubRelease
+      kanji-stroke-order-font
     ];
 
     fontconfig.defaultFonts = {
