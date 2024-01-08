@@ -12,12 +12,11 @@
     config,
     ...
   }: {
-    # create profiel-backup file to backup fcitx5 profile
+    # create profile-backup file to backup fcitx5 profile
     home.file."${config.xdg.configHome}/fcitx5/profile-backup".source = ./profile.conf;
     home.file."${config.xdg.configHome}/fcitx5/profile".source = ./profile.conf;
 
     # Theme & color schema
-    # TODO: change theme and test it
     home.file."/home/${vars.user}/.local/share/fcitx5/themes".source = "${inputs.catppuccin-fcitx5}/src";
     home.file."${config.xdg.configHome}/fcitx5/conf/classicui.conf".source = ./classicui.conf;
 
