@@ -26,7 +26,12 @@
   };
 
   # Enable Audio
-  audio.enable = true;
+  audio = {
+    enable = true;
+    NoiseSuppressionForVoice = {
+      enable = true;
+    };
+  };
 
   # Enable Laptop Features
   laptop.enable = true;
@@ -36,6 +41,9 @@
 
   # Set the Kernel
   boot.kernelPackages = pkgs.linuxKernel.packages.linux_zen;
+
+  # Enable virtualization
+  custom_virtualisation.enable = true;
 
   # System-Wide Packages
   environment.systemPackages = with pkgs;
@@ -56,4 +64,10 @@
 
   # Enable Firefox
   firefox.enable = true;
+
+  # Enable Gaming Programs
+  gaming.enable = true;
+
+  # Enable Gnome Disks
+  programs.gnome-disks.enable = true;
 }

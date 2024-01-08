@@ -18,7 +18,10 @@
   boot.extraModulePackages = [];
 
   # Enable the GPU
-  nvidia_gpu.enable = true;
+  nvidia_gpu = {
+    enable = true;
+    direct_backend = true;
+  };
 
   # Enable the SSD
   ssd.enable = true;

@@ -8,4 +8,8 @@
   ./wlogout
   ./minecraft.nix
   ./swaylock.nix
+  ./swayidle.nix
+  ./waybar
+  ./gaming.nix
+  ./virtualization.nix
 ]

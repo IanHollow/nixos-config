@@ -14,8 +14,12 @@
 
   boot.initrd.availableKernelModules = ["nvme" "thunderbolt" "xhci_pci" "usbhid" "usb_storage" "sd_mod" "ums_realtek"];
   boot.initrd.kernelModules = [];
-  boot.kernelModules = ["kvm-intel"]; # TODO: add virtualization support through a module
+  boot.kernelModules = [];
   boot.extraModulePackages = [];
+
+  # Firmware Updates
+  services.fwupd.enable = true;
+  hardware.enableAllFirmware = true;
 
   # GPU IDs
   hardware.nvidia.prime = {
@@ -27,6 +31,7 @@
   # Enable the GPUs
   nvidia_gpu = {
     enable = true;
+    direct_backend = true;
     prime_render_offload.enable = true;
   };
   intel_gpu = {
@@ -66,10 +71,15 @@
     wifiPowersave = true;
   };
 
+  # Define the host platform
   nixpkgs.hostPlatform = lib.mkDefault system;
-  # TODO: firgure out the best way to manage the cpu clock speed on a laptop
-  powerManagement.cpuFreqGovernor = lib.mkDefault "powersave"; # TODO: figure out more about this option
 
   # Enable the CPU
-  intel_cpu.enable = true;
+  intel_cpu = {
+    enable = true;
+    thermald.enable = true;
+  };
+
+  # Enable auto-cpufreq
+  auto-cpufreq.enable = true;
 }

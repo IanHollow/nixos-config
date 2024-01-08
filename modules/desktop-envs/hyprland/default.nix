@@ -10,6 +10,8 @@
 }:
 with lib; let
   nixos_config = config;
+  hyprland_pkg = inputs.hyprland.packages.${pkgs.system}.hyprland;
+  hyprctl_exec = "${hyprland_pkg}/bin/hyprctl";
 in {
   imports = [
     inputs.hyprland.nixosModules.default
@@ -30,6 +32,13 @@ in {
         type = types.bool;
         default = false;
       };
+
+      # Set volume limit
+      volumeLimit = mkOption {
+        type = types.int;
+        default = 100;
+      };
+
       # TODO: move monitor options to a seperate module in the hardware modules
       monitors = {
         primary = {
@@ -87,33 +96,39 @@ in {
       wlr-randr # Monitor Settings
       networkmanagerapplet
       blueman
-      ranger
+      ranger # File Manager
+      gnome.nautilus # File Manager
     ];
 
     # enable custom modules through options
     mako.enable = true; # Notifications
     rofi.enable = true; # Application Launcher & Other Menus
+    swaylock.enable = true; # Lock Screen
+    swayidle.enable = true; # Idle Daemon
+    waybar.enable = true; # Status Bar
 
     home-manager.users.${vars.user} = {config, ...}: {
       # Import the Hyprland Nix module
-      imports = [inputs.hyprland-nix.homeManagerModules.default];
+      # imports = [inputs.hyprland-nix.homeManagerModules.default];
 
       # TODO: fix issue with firefox pop windows becoming full screen
 
       # enable the hyprland configuration
-      wayland.windowManager.hyprland = {
+      wayland.windowManager.hyprland = let
+        swaylock_exec = "${pkgs.swaylock}/bin/swaylock";
+      in {
         # Enable Hyprland
         enable = true;
-        package = inputs.hyprland.packages.${pkgs.system}.hyprland;
-        xwayland.enable = true; # Enable XWayland
-        reloadConfig = true;
-        systemdIntegration = true;
+        package = hyprland_pkg;
+        # xwayland.enable = true; # Enable XWayland
+        # reloadConfig = true;
+        # systemdIntegration = true;
 
         # Configure the Settings
         # Docs:
         # https://wiki.hyprland.org/Configuring/Variables/
         # TODO: follow github:hyprland-community/hyprland-nix/hm-module/configRenames.nix for new names for hyprland settings/config
-        config = let
+        settings = let
           playerctl = "${pkgs.playerctl}/bin/playerctl";
           wpctl = "${pkgs.wireplumber}/bin/wpctl";
           mainMod = "SUPER";
@@ -266,10 +281,6 @@ in {
             };
           };
 
-          # gestures = {};
-
-          # group = {};
-
           misc = {
             # Varible Frame Rate
             vfr = true;
@@ -286,6 +297,10 @@ in {
 
             # Force Default Wallpaper
             force_default_wallpaper = 1;
+
+            # DPMS
+            mouse_move_enables_dpms = true;
+            key_press_enables_dpms = true;
 
             # TODO: Add swallow
           };
@@ -333,8 +348,8 @@ in {
           in
             with builtins; [
               # Primary Monitor
-              # "${toString name}, ${toString width}x${toString height}@${toString refreshRate}, 0x0, ${toString scale}, bitdepth, ${toString colorDepth}"
-              "${toString name}, disable" # this is temporary
+              "${toString name}, ${toString width}x${toString height}@${toString refreshRate}, 0x0, ${toString scale}, bitdepth, ${toString colorDepth}"
+              # "${toString name}, disable" # this is temporary
 
               # Other Monitors
               # TODO: add better way to handle other monitors
@@ -343,7 +358,6 @@ in {
 
           # Set Keybindings
           bind = let
-            # TODO: Add another way to launch rofi for nvidia offload
             nvidiaOffload =
               if (nixos_config.nvidia_gpu.enable && nixos_config.nvidia_gpu.prime_render_offload.enable)
               then "nvidia-offload"
@@ -355,7 +369,7 @@ in {
             "${mainMod} SHIFT, R, exec, pkill rofi || ${nvidiaOffload} ${pkgs.rofi-wayland}/bin/rofi -show drun"
             "${mainMod}, C, killactive,"
             "${mainMod}, M, exit"
-            "${mainMod}, L, exec, ${pkgs.swaylock}/bin/swaylock"
+            "${mainMod}, L, exec, ${swaylock_exec} -fF "
             "ControlShiftAlt, Delete, exec, pkill wlogout || ${pkgs.wlogout}/bin/wlogout -p layer-shell"
 
             # Move focus with mainMod + arrow keys
@@ -395,16 +409,16 @@ in {
             ",XF86AudioMute, exec, ${wpctl} set-mute @DEFAULT_SINK@ toggle"
           ];
 
-          binde = [
+          binde = let
+            volume_limit = nixos_config.hyprland.volumeLimit / 100.0;
+          in [
             # Audio Keys
-            # TODO: add user option to set the max volume limit (current is 1 for 100%)
-            ",XF86AudioRaiseVolume, exec, ${wpctl} set-volume -l 1 @DEFAULT_SINK@ 5%+"
+            ",XF86AudioRaiseVolume, exec, ${wpctl} set-volume -l ${builtins.toString volume_limit} @DEFAULT_SINK@ 5%+"
             ",XF86AudioLowerVolume, exec, ${wpctl} set-volume @DEFAULT_SINK@ 5%-"
 
             # Brightness Keys
-            # TODO: enable this based on user options
-            ",XF86MonBrightnessUp, exec, ${pkgs.lib.getExe pkgs.brightnessctl} set 5%+"
-            ",XF86MonBrightnessDown, exec, ${pkgs.lib.getExe pkgs.brightnessctl} set 5%-"
+            (optionals (nixos_config.laptop.enable) ",XF86MonBrightnessUp, exec, ${pkgs.lib.getExe pkgs.brightnessctl} set 5%+")
+            (optionals (nixos_config.laptop.enable) ",XF86MonBrightnessDown, exec, ${pkgs.lib.getExe pkgs.brightnessctl} set 5%-")
           ];
 
           bindm = [
@@ -413,39 +427,48 @@ in {
             "${mainMod}, mouse:273, resizewindow"
           ];
 
-          exec_once = [
+          # TODO: only enable aucn if the user enables the asociated options
+          exec-once = [
+            # Dbus
+            "${pkgs.dbus}/bin/dbus-update-activation-environment --all &"
+
+            # Keyring
+            "${pkgs.gnome.gnome-keyring}/bin/gnome-keyring-daemon --start --components=secrets &"
+
+            # Polkit
+            "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1 &"
+
+            # Swayidle
+            "${pkgs.swayidle}/bin/swayidle -w &"
+
             # Fcitx
             # TODO: make sure startup for fcitx is enabled based upon user options
             "fcitx5 -d --replace &"
 
-            # Keyring
-            # TODO: make this based off of the keyring user options
-            "${pkgs.gnome.gnome-keyring}/bin/gnome-keyring-daemon --start --components=secrets &"
-
-            # Polkit
-            # TODO: make this startup for polkit based on user options
-            "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1 &"
-
-            # Dbus
-            "${pkgs.dbus}/dbus-upadate-activation-environment --all &"
-
             # Cursor
-            "hyprctl setcursor ${config.home.pointerCursor.name} ${builtins.toString config.home.pointerCursor.size}"
+            "${hyprctl_exec} setcursor ${config.home.pointerCursor.name} ${builtins.toString config.home.pointerCursor.size}"
+
+            # Waybar
+            "${pkgs.waybar}/bin/waybar"
+
+            # Discord
+            "sleep 2 && ${unstable.webcord-vencord}/bin/webcord --start-minimized &"
           ];
 
-          windowrulev2 = [
-            # Fcitx
-            # TODO: make sure windowrulev2 for fcitx is enabled based upon user options
-            "pseudo, class:^(fcitx)$"
-
+          windowrulev2 =
+            [
+              # Fcitx
+              # TODO: make sure windowrulev2 for fcitx is enabled based upon user options
+              "pseudo, class:^(fcitx)$"
+            ]
             # XWayland Video Bridge
             # DOCS: https://wiki.hyprland.org/Useful-Utilities/Screen-Sharing/#xwayland
-            # TODO: make sure windowrulev2 for XWayland Video Bridge is enabled based upon user options
-            "opacity 0.0 override 0.0 override, class:^(xwaylandvideobridge)$"
-            "noanim, class:^(xwaylandvideobridge)$"
-            "nofocus, class:^(xwaylandvideobridge)$"
-            "noinitialfocus, class:^(xwaylandvideobridge)$"
-          ];
+            ++ optionals (nixos_config.xwaylandvideobridge.enable) [
+              "opacity 0.0 override 0.0 override, class:^(xwaylandvideobridge)$"
+              "noanim, class:^(xwaylandvideobridge)$"
+              "nofocus, class:^(xwaylandvideobridge)$"
+              "noinitialfocus, class:^(xwaylandvideobridge)$"
+            ];
         };
       };
     };
@@ -453,10 +476,10 @@ in {
     # Disable Sleep & Hibernation
     # TODO: make a modules for sleep and hibernation
     systemd.sleep.extraConfig = ''
-      AllowSuspend=no
+      AllowSuspend=yes
       AllowHibernation=no
       AllowSuspendThenHibernate=no
-      AllowHybridSleep=no
+      AllowHybridSleep=yes
     '';
   };
 }
