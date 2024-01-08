@@ -19,6 +19,7 @@ with lib; {
   };
 
   # TODO: make this multi-file config
+  # TODO: make seperate module for floorp browser
 
   config = mkIf (config.firefox.enable) {
     home-manager.users.${vars.user} = let
@@ -82,8 +83,6 @@ with lib; {
             };
           };
 
-          # TODO: enable https only mode in firefox
-
           profiles = let
             inherit (builtins) toJSON;
             inherit (lib) concatLines mapAttrsToList;
@@ -130,6 +129,7 @@ with lib; {
               #       Removing or commenting out an option in the user.js NixOS config will not revert the option in Firefox.
               #       To revert an option you must either change the option in Firefox about:config or modify the profile prefs.js file.
               # TODO: look over all Arkenfox options again and add them to this config with testing of them
+              # TODO: add options from betterfox
               extraConfig = toUserJs {
                 # GeoLocation
                 "geo.provider.network.url" = "https://location.services.mozilla.com/v1/geolocate?key=%MOZILLA_API_KEY%";
@@ -398,7 +398,7 @@ with lib; {
                 default = "Google";
 
                 # Set private default search engine
-                privateDefault = "DuckDuckGo"; # TODO: Test doesn't seem to work
+                privateDefault = "DuckDuckGo";
               };
             };
           };
