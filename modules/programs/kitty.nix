@@ -29,6 +29,9 @@
       # look at the contents of kitty-themes conf files to see theme names
       theme = "Catppuccin-Mocha";
 
+      # Set package
+      package = pkgs.kitty;
+
       font = {
         name = "CaskaydiaCove Nerd Font";
         size = 13;
