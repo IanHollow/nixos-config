@@ -11,6 +11,7 @@ with lib; {
       enable = mkOption {
         type = types.bool;
         default = false;
+        description = "Enable features for SSDs";
       };
     };
   };
@@ -24,6 +25,19 @@ with lib; {
     {
       # storage daemon required for udiskie auto-mount
       services.udisks2.enable = true;
+
+      # Add more supported file systems for removable drives
+      boot.supportedFilesystems = [
+        "ext4"
+        "btrfs"
+        "xfs"
+        "ntfs"
+        "fat"
+        "vfat"
+      ];
+
+      # Trash support
+      services.gvfs.enable = true;
     }
   ];
 }
