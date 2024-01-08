@@ -23,8 +23,8 @@
 
         # Font
         "editor.fontLigatures" = true;
-        "editor.fontFamily" = "CaskaydiaCove NF";
-        "terminal.integrated.fontFamily" = "CaskaydiaCove NF";
+        "editor.fontFamily" = "'JetBrainsMono Nerd Font'";
+        "terminal.integrated.fontFamily" = "'JetBrainsMono Nerd Font'";
 
         # Theming
         "window.titleBarStyle" = "custom"; # Helps with stability on wayland
