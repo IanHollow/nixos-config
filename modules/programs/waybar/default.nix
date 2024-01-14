@@ -56,13 +56,16 @@ in {
             gtk-layer-shell = true;
 
             # Left side
-            modules-left = [
-              "custom/padd"
-              "custom/l_end"
-              (optionals hyprland_enabled "hyprland/workspaces")
-              "custom/r_end"
-              "custom/padd"
-            ];
+            modules-left =
+              [
+                "custom/padd"
+                "custom/l_end"
+              ]
+              ++ (optionals hyprland_enabled ["hyprland/workspaces"])
+              ++ [
+                "custom/r_end"
+                "custom/padd"
+              ];
 
             # Center
             modules-center = [
@@ -75,19 +78,22 @@ in {
             ];
 
             # Right side
-            modules-right = [
-              "custom/padd"
-              "custom/l_end"
-              "tray"
-              "custom/r_end"
-              "custom/l_end"
-              (optionals nixos_config.laptop.enable "battery")
-              "network"
-              "pulseaudio"
-              "pulseaudio#microphone"
-              "custom/r_end"
-              "custom/padd"
-            ];
+            modules-right =
+              [
+                "custom/padd"
+                "custom/l_end"
+                "tray"
+                "custom/r_end"
+                "custom/l_end"
+              ]
+              ++ (optionals nixos_config.laptop.enable ["battery"])
+              ++ [
+                "network"
+                "pulseaudio"
+                "pulseaudio#microphone"
+                "custom/r_end"
+                "custom/padd"
+              ];
 
             # Define modules
             "hyprland/workspaces" = {

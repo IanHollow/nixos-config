@@ -8,5 +8,8 @@
   environment.systemPackages = [
     inputs.getchoo.packages.${pkgs.system}.modrinth-app
     pkgs.prismlauncher
+    # pkgs.zulu
+    pkgs.jdk8
+    pkgs.jdk17
   ];
 }

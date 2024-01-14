@@ -343,7 +343,7 @@ in {
             colorDepth = nixos_config.hyprland.monitors.primary.colorDepth;
             # Calculate scale # TODO: Make this better later
             # scale = (trivial.min height width) / 1080.0;
-            scale = 2; # This is a temporary fix for me while I work on a better calculation
+            scale = 1.25; # This is a temporary fix for me while I work on a better calculation
             # TODO: their should be a scale override option as some scales have issues
           in
             with builtins; [
@@ -353,7 +353,7 @@ in {
 
               # Other Monitors
               # TODO: add better way to handle other monitors
-              "HDMI-A-1, 1920x1080@60, ${toString width}x0, 1"
+              # "HDMI-A-1, 1920x1080@60, ${toString width}x0, 1"
             ];
 
           # Set Keybindings
@@ -417,8 +417,8 @@ in {
             ",XF86AudioLowerVolume, exec, ${wpctl} set-volume @DEFAULT_SINK@ 5%-"
 
             # Brightness Keys
-            (optionals (nixos_config.laptop.enable) ",XF86MonBrightnessUp, exec, ${pkgs.lib.getExe pkgs.brightnessctl} set 5%+")
-            (optionals (nixos_config.laptop.enable) ",XF86MonBrightnessDown, exec, ${pkgs.lib.getExe pkgs.brightnessctl} set 5%-")
+            # (optionals (nixos_config.laptop.enable) ",XF86MonBrightnessUp, exec, ${pkgs.lib.getExe pkgs.brightnessctl} set 5%+")
+            # (optionals (nixos_config.laptop.enable) ",XF86MonBrightnessDown, exec, ${pkgs.lib.getExe pkgs.brightnessctl} set 5%-")
           ];
 
           bindm = [
