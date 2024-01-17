@@ -81,5 +81,15 @@ in {
         "kvm.ignore_msrs=1"
       ];
     };
+
+    home-manager.users.${vars.user} = {
+      # To deal with startup issues on virt-manager: https://nixos.wiki/wiki/Virt-manager
+      dconf.settings = {
+        "org/virt-manager/virt-manager/connections" = {
+          autoconnect = ["qemu:///system"];
+          uris = ["qemu:///system"];
+        };
+      };
+    };
   };
 }
