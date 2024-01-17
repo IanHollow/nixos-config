@@ -18,6 +18,10 @@ with lib; {
 
   # Define auto-cpufreq config
   config = mkIf (config.auto-cpufreq.enable) {
+    environment.systemPackages = with unstable; [
+      auto-cpufreq
+    ];
+
     services.auto-cpufreq = {
       enable = true;
 
@@ -25,10 +29,12 @@ with lib; {
         battery = {
           governor = "powersave";
           turbo = "never";
+          energy_performance_preference = "performance";
         };
         charger = {
           governor = "performance";
           turbo = "auto";
+          energy_performance_preference = "power";
         };
       };
     };
