@@ -250,7 +250,7 @@ with lib; {
                 "dom.disable_window_move_resize" = true;
 
                 # Miscellanious
-                "browser.download.start_downloads_in_tmp_dir" = true;
+                # "browser.download.start_downloads_in_tmp_dir" = true;
                 "browser.helperApps.deleteTempFileOnExit" = true;
                 "browser.uitour.enabled" = false;
                 "devtools.debugger.remote-enabled" = false;
