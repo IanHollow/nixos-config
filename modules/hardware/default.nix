@@ -5,4 +5,5 @@
   ./storage.nix
   ./networking.nix
   ./boot.nix
+  ./bluetooth.nix
 ]
