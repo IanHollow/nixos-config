@@ -82,4 +82,7 @@
 
   # Enable auto-cpufreq
   auto-cpufreq.enable = true;
+
+  # Bluetooth
+  bluetooth.enable = true;
 }
