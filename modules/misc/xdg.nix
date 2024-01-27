@@ -50,6 +50,7 @@ with lib; {
       # Install extra packages
       environment.systemPackages = with pkgs; [
         xdg-utils # XDG Utilities needed for xdg-open
+        xdg-user-dirs # XDG User Directories
       ];
     })
   ];
