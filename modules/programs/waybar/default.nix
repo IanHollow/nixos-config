@@ -205,7 +205,8 @@ in {
 
             "custom/spotify" = let
               # TODO: modify this to use something else https://discourse.nixos.org/t/how-to-have-gst-and-gtk-in-python/5241/2
-              python_env = "nix-shell -p gobject-introspection -p playerctl -p 'python3.withPackages (p: with p; [pygobject3 gst-python])' --run";
+              # TODO: write a nix shell flake file for this in the config directory
+              python_env = "nix shell nixpkgs#gobject-introspection nixpkgs#playerctl nixpkgs#python311 nixpkgs#python311Packages.pygobject3 nixpkgs#python311Packages.gst-python --command";
             in {
               "format" = " {}";
               "return-type" = "json";
