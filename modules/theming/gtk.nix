@@ -2,8 +2,11 @@
   vars,
   pkgs,
   unstable,
+  config,
   ...
-}: {
+}: let
+  nixos_config = config;
+in {
   home-manager.users.${vars.user} = {
     lib,
     config,
@@ -15,6 +18,7 @@
       rm -rf "${config.xdg.configHome}/gtk-4.0"
     '';
 
+    dconf.enable = true;
     dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark";
 
     gtk = {
@@ -31,7 +35,7 @@
       };
 
       font = {
-        name = "Noto Sans";
+        name = "Noto Sans 11";
         package = pkgs.noto-fonts;
       };
 
@@ -58,6 +62,11 @@
         name = "Catppuccin-Mocha-Standard-Lavender-Dark";
       };
     };
+  };
+
+  # set environment variables for gtk and gnome apps
+  environment.sessionVariables = {
+    GTK_THEME = nixos_config.home-manager.users.${vars.user}.gtk.theme.name;
   };
 
   # enable dconf so that gtk and gnome apps work on none gnome desktops
