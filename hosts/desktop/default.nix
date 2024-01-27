@@ -11,6 +11,7 @@
   # Desktop Evironment
   hyprland = {
     enable = true;
+    allowTearing = true;
     monitors = {
       primary = {
         enable = true;
@@ -21,6 +22,7 @@
         };
         refreshRate = 165;
         colorDepth = 10;
+        vrr = true;
       };
     };
   };
@@ -46,10 +48,11 @@
   environment.systemPackages = with pkgs;
     [
       # Media/Video
-      okular # PDF Viewer
-      gwenview # Image Viewer
+      evince # PDF Viewer
+      gnome.eog # Image Viewer
       mpv # Video Player
-      anki-bin # Flashcard Program
+      motrix # Download Manager
+      gnome-text-editor # Text Editor
     ]
     ++ (with unstable; [
       # Apps
@@ -57,6 +60,7 @@
       zoom-us # Video Conferencing
       slack # Messaging
       telegram-desktop # Messaging
+      anki # Flashcard Program
     ]);
 
   # Enable Firefox
