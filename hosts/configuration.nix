@@ -56,6 +56,7 @@
         eza # colored alternative to ls
         ripgrep # grep but rust
         sd # sed but rust
+        unixtools.xxd # hexdump but better
         # tealdear      # manpage summaries
 
         ################
@@ -135,6 +136,10 @@
       substituters = my_substituters;
       trusted-users = ["@wheel" "${vars.user}" "root"];
     };
+
+    # make `nix run nixpkgs#nixpkgs` use the same nixpkgs as the one used by this flake.
+    registry.nixpkgs.flake = inputs.nixpkgs;
+    channel.enable = false; # remove nix-channel related tools & configs, we use flakes instead.
   };
 
   # Nixpkgs Overlays
