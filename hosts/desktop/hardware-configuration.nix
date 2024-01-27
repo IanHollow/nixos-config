@@ -14,13 +14,18 @@
 
   boot.initrd.availableKernelModules = ["nvme" "ahci" "xhci_pci" "usbhid" "usb_storage" "sd_mod"];
   boot.initrd.kernelModules = [];
-  boot.kernelModules = ["kvm-amd"]; # TODO: add virtualization support through a module
+  boot.kernelModules = [];
   boot.extraModulePackages = [];
+
+  # Firmware Updates
+  services.fwupd.enable = true;
+  hardware.enableAllFirmware = true;
 
   # Enable the GPU
   nvidia_gpu = {
     enable = true;
     direct_backend = true;
+    open_kernel_modules = true;
   };
 
   # Enable the SSD
@@ -36,6 +41,12 @@
   fileSystems."/boot" = {
     device = "/dev/disk/by-label/boot";
     fsType = "vfat";
+  };
+
+  # Set shared Windows Games partition
+  fileSystems."/mnt/games" = {
+    device = "/dev/disk/by-label/games";
+    fsType = "ntfs";
   };
 
   # Set the swap partition
@@ -56,4 +67,7 @@
 
   # Enable the CPU
   amd_cpu.enable = true;
+
+  # Bluetooth
+  bluetooth.enable = true;
 }
