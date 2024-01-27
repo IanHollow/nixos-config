@@ -38,20 +38,21 @@ with lib; {
 
         package = pkgs.swayidle;
 
-        # Configure timeouts
-        timeouts = [
-          # First timeout: Lock screen
-          {
-            timeout = 300;
-            command = swaylock_exec;
-          }
+        # TODO: create a way to prevent the screen of turning off when the user is watching a video or another task that requires the screen to be on
+        # # Configure timeouts
+        # timeouts = [
+        #   # First timeout: Lock screen
+        #   {
+        #     timeout = 300;
+        #     command = swaylock_exec;
+        #   }
 
-          # Second timeout: Suspend system
-          {
-            timeout = 600;
-            command = "${systemctl_exec} suspend";
-          }
-        ];
+        #   # Second timeout: Suspend system
+        #   {
+        #     timeout = 600;
+        #     command = "${systemctl_exec} suspend";
+        #   }
+        # ];
 
         # Configure events
         events = [
