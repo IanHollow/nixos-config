@@ -16,12 +16,6 @@ with lib; {
     gamescope_env = mkMerge [
       {
         WLR_RENDERER = "vulkan";
-        # DXVK_HDR = "1"; # TODO: make based on monitor config
-        # ENABLE_GAMESCOPE_WSI = "1";
-        # WINE_FULLSCREEN_FSR = "1";
-        # WINEFSYNC = "1";
-        # WINE_VK_VULKAN_ONLY = "1";
-        # WINE_VK_USE_FSR = "1";
       }
 
       ( # Nvidia Prime Offload
@@ -43,6 +37,7 @@ with lib; {
       programs = {
         steam = {
           enable = true;
+          # fix gamescope inside steam
           package = unstable.steam;
           gamescopeSession = {
             enable = true;
@@ -64,7 +59,6 @@ with lib; {
 
       environment.systemPackages = [
         # Steam
-        unstable.protonup-qt # proton package manager
         pkgs.vkbasalt # a reshader
         pkgs.mangohud # display system info on top of games
         pkgs.goverlay # tool for mangohud
@@ -73,8 +67,9 @@ with lib; {
         pkgs.lutris
 
         # Wine
+        pkgs.protonup-qt
         pkgs.protontricks
-        pkgs.winePackages.waylandFull
+        unstable.wineWowPackages.full
         pkgs.winetricks
         pkgs.gnome.zenity
       ];
