@@ -20,6 +20,10 @@
         "editor.inlineSuggest.enabled" = true;
         "extensions.ignoreRecommendations" = true;
         "explorer.confirmDragAndDrop" = false;
+        "editor.fontSize" = 14;
+        "terminal.integrated.fontSize" = 13;
+        "workbench.activityBar.location" = "top";
+        "editor.minimap.enabled" = false;
 
         # Font
         "editor.fontLigatures" = true;
@@ -47,10 +51,7 @@
         # C and CPP
         "[c]"."editor.tabSize" = 4;
         "[cpp]"."editor.tabSize" = 4;
-        "C_Cpp.default.intelliSenseMode" = "linux-gcc-x64";
-        "C_Cpp.default.cStandard" = "c99";
         "C_Cpp.codeAnalysis.clangTidy.enabled" = true;
-        "C_Cpp.default.compilerPath" = "${pkgs.gcc}/bin/gcc";
 
         # Python
         "[python]"."editor.tabSize" = 4;
@@ -97,6 +98,7 @@
 
           # Extra
           github.copilot
+          ms-vscode-remote.remote-ssh
         ]
         # the package vscode-flake-extensions has multiple options for extensions
         # most importantly there are vscode marketplace extensions and open vsx extensions
@@ -121,7 +123,7 @@
           ms-ceintl.vscode-language-pack-ja # Not tested yet
         ]);
 
-      package = unstable.vscodium.override {
+      package = unstable.vscode.override {
         # TODO: only add commandLineArgs based on config options
         commandLineArgs = "--password-store=gnome --enable-wayland-ime";
       };
