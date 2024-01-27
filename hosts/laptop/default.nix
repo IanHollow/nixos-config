@@ -21,6 +21,7 @@
         };
         refreshRate = 60;
         colorDepth = 10;
+        scaleOverride = 2;
       };
     };
   };

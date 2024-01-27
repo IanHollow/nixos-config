@@ -77,6 +77,10 @@ in {
             type = types.bool;
             default = false;
           };
+          scaleOverride = mkOption {
+            type = types.int;
+            default = null;
+          };
         };
       };
     };
@@ -283,7 +287,8 @@ in {
 
           misc = {
             # Varible Frame Rate
-            vfr = true;
+            # TODO: make this a user option. false because of issues with flickering
+            vfr = false;
 
             # Variable Refresh Rate
             # 0 - off, 1 - on, 2 - fullscreen only
@@ -342,9 +347,10 @@ in {
             refreshRate = nixos_config.hyprland.monitors.primary.refreshRate;
             colorDepth = nixos_config.hyprland.monitors.primary.colorDepth;
             # Calculate scale # TODO: Make this better later
-            # scale = (trivial.min height width) / 1080.0;
-            scale = 1.25; # This is a temporary fix for me while I work on a better calculation
-            # TODO: their should be a scale override option as some scales have issues
+            scale =
+              if nixos_config.hyprland.monitors.primary.scaleOverride != null
+              then nixos_config.hyprland.monitors.primary.scaleOverride
+              else (trivial.min height width) / 1080.0;
           in
             with builtins; [
               # Primary Monitor

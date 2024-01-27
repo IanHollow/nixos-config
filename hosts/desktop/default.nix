@@ -23,6 +23,7 @@
         refreshRate = 165;
         colorDepth = 10;
         vrr = true;
+        scaleOverride = 1.25;
       };
     };
   };
