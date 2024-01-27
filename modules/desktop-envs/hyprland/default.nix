@@ -78,7 +78,7 @@ in {
             default = false;
           };
           scaleOverride = mkOption {
-            type = types.int;
+            type = types.float;
             default = null;
           };
         };

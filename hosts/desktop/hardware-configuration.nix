@@ -25,7 +25,7 @@
   nvidia_gpu = {
     enable = true;
     direct_backend = true;
-    open_kernel_modules = true;
+    open_kernel_modules.enable = true;
   };
 
   # Enable the SSD
