@@ -33,6 +33,15 @@ with lib; {
           default = false;
         };
       };
+
+      # Open Kernel Modules
+      open_kernel_modules = {
+        # Condition if host wants to use open kernel modules
+        enable = mkOption {
+          type = types.bool;
+          default = false;
+        };
+      };
     };
   };
 
@@ -85,7 +94,7 @@ with lib; {
         # Do not disable this unless your GPU is unsupported or if you have a good reason to.
         # NOTE: Due to issue https://github.com/NVIDIA/open-gpu-kernel-modules/issues/472
         #       open kernel modules cannot be ennabled with hardware.nvidia.powerManagement.enabled set to true
-        open = !config.hardware.nvidia.powerManagement.enable;
+        open = !config.hardware.nvidia.powerManagement.enable || config.hardware.nvidia.open_kernel_modules.enable;
 
         # The Nvidia settings menu,
         # accessible via `nvidia-settings`.
