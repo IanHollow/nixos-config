@@ -48,6 +48,10 @@ in {
             nvram = [ "${pkgs.OVMF}/FV/OVMF.fd:${pkgs.OVMF}/FV/OVMF_VARS.fd" ]
           '';
           swtpm.enable = true; # For TPM
+
+          # hanging this option to false may cause file permission issues for existing guests.
+          # To fix these, manually change ownership of affected files in /var/lib/libvirt/qemu to qemu-libvirtd.
+          runAsRoot = true;
         };
       };
       spiceUSBRedirection.enable = true;
@@ -80,6 +84,9 @@ in {
         "${platform}_iommu=pt"
         "kvm.ignore_msrs=1"
       ];
+
+      # Enable nested virsualization, required by security containers and nested vm.
+      extraModprobeConfig = "options kvm_${platform} nested=1"; # for intel cpu
     };
 
     home-manager.users.${vars.user} = {
