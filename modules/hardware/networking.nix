@@ -85,6 +85,9 @@ with lib; {
           # Define iwd settings
           settings = {
             General = {
+              # Enable Network Configuration
+              EnableNetworkConfiguration = true;
+
               # Must be set to "network" to enable Random MAC Address
               AddressRandomization = mkIf (config.custom_networking.radomizeMacAddress) "network";
             };
